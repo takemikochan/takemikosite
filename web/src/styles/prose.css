@@ -1,0 +1,93 @@
+/*
+ * CMS 本文（BlocksRenderer.astro が出力する HTML）用のスタイル。
+ * base.css がグローバルに外している list-style 等をここで戻す。
+ */
+.prose {
+  max-width: 34em; /* 日本語は約 34 文字/行が可読性の上限の目安 */
+  line-height: var(--lh-prose);
+  color: var(--color-text);
+}
+
+.prose > * + * {
+  margin-top: var(--sp-5);
+}
+
+.prose h2 {
+  font-size: var(--fs-2xl);
+  margin-top: var(--sp-8);
+}
+
+.prose h3 {
+  font-size: var(--fs-xl);
+  margin-top: var(--sp-6);
+}
+
+.prose p {
+  margin: 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose blockquote {
+  margin: 0;
+  padding-left: var(--sp-5);
+  border-left: 3px solid var(--color-accent-decorative);
+  color: var(--color-text-muted);
+}
+
+.prose img {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.prose a {
+  text-decoration: underline;
+}
+
+.prose code {
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.9em;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.4em;
+}
+
+.prose pre {
+  background: var(--color-surface-muted);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  border: var(--border-width) solid var(--color-border);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}

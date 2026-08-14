@@ -1,0 +1,154 @@
+---
+import { nav } from '../../data/nav';
+---
+
+<div id="nav-drawer" class="nav-drawer" data-nav-drawer aria-hidden="true">
+  <button
+    type="button"
+    class="nav-drawer__backdrop"
+    data-nav-drawer-backdrop
+    aria-label="メニューを閉じる"
+  ></button>
+  <nav class="nav-drawer__panel" aria-label="メインナビゲーション（モバイル）">
+    <button type="button" class="nav-drawer__close" data-nav-drawer-close>
+      <span class="sr-only">メニューを閉じる</span>
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path
+          d="M6 6l12 12M18 6L6 18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
+    </button>
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .nav-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    visibility: hidden;
+  }
+  .nav-drawer.is-open {
+    visibility: visible;
+  }
+
+  .nav-drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    background: rgba(36, 27, 26, 0.4);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    cursor: pointer;
+  }
+  .nav-drawer.is-open .nav-drawer__backdrop {
+    opacity: 1;
+  }
+
+  .nav-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(80vw, 320px);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    padding: var(--sp-6) var(--sp-5);
+    transform: translateX(100%);
+    transition: transform var(--dur) var(--ease);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+  .nav-drawer.is-open .nav-drawer__panel {
+    transform: translateX(0);
+  }
+
+  .nav-drawer__close {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    padding: var(--sp-2);
+    cursor: pointer;
+  }
+
+  .nav-drawer__panel ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .nav-drawer__panel a {
+    display: block;
+    padding: var(--sp-3) var(--sp-2);
+    font-size: var(--fs-lg);
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+  }
+  .nav-drawer__panel a:hover {
+    background: var(--color-surface-muted);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (min-width: 768px) {
+    .nav-drawer {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const drawer = document.querySelector<HTMLElement>('[data-nav-drawer]');
+  const backdrop = document.querySelector<HTMLElement>('[data-nav-drawer-backdrop]');
+  const closeBtn = document.querySelector<HTMLElement>('[data-nav-drawer-close]');
+  const toggleBtns = document.querySelectorAll<HTMLElement>('[data-nav-toggle]');
+
+  function openDrawer() {
+    drawer?.classList.add('is-open');
+    drawer?.setAttribute('aria-hidden', 'false');
+    toggleBtns.forEach((btn) => btn.setAttribute('aria-expanded', 'true'));
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer?.classList.remove('is-open');
+    drawer?.setAttribute('aria-hidden', 'true');
+    toggleBtns.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    document.body.style.overflow = '';
+  }
+
+  toggleBtns.forEach((btn) => btn.addEventListener('click', openDrawer));
+  backdrop?.addEventListener('click', closeDrawer);
+  closeBtn?.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+</script>

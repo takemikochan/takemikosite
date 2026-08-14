@@ -1,0 +1,105 @@
+/*
+ * デザイントークン。色・タイポ・余白・形の質感の唯一の出所。
+ * コンポーネントは --color-* / --fs-* / --sp-* / --radius-* / --shadow-* などの
+ * 「セマンティック（役割名）」トークンのみを参照する。--p-* の原色を直接使わない。
+ *
+ * 配色・形の質感は「たけるのみこと」のキャラクター設定から確定している
+ * （計画書 §5.1 参照）。変更する場合はこのファイル 1 枚を書き換えるだけで良い。
+ */
+:root {
+  /* ---- パレット（原色。コンポーネントからは直接使わない） ---- */
+  --p-ink-900: #241b1a; /* 温かみのある墨色。冷たいグレーにしない */
+  --p-ink-600: #6b5a56;
+  --p-ink-300: #d8ccc7;
+
+  --p-paper-0: #ffffff;
+  --p-paper-50: #fdf8f6; /* 肌色・白装束由来の生成り */
+  --p-paper-100: #f7eeea;
+  --p-paper-200: #eedfd9;
+
+  --p-vermillion-700: #96131c; /* 瞳・掛襟の朱 */
+  --p-vermillion-500: #c01e2a;
+  --p-vermillion-100: #f7dedd;
+
+  --p-cyan-700: #00708a; /* 毛束・ネイル・ヘアクリップの水色 */
+  --p-cyan-500: #00b7d6;
+  --p-cyan-100: #dff6fb;
+
+  --p-gold-500: #f7c96e; /* 毛束の金。装飾専用 */
+  --p-gold-100: #fbf0dc;
+
+  /* ---- セマンティック（コンポーネントはこちらだけ参照） ---- */
+  --color-bg: var(--p-paper-50);
+  --color-surface: var(--p-paper-0);
+  --color-surface-muted: var(--p-paper-100);
+  --color-border: var(--p-paper-200);
+  --color-text: var(--p-ink-900);
+  --color-text-muted: var(--p-ink-600);
+  --color-text-invert: var(--p-paper-0);
+
+  --color-primary: var(--p-vermillion-500);
+  --color-primary-hover: var(--p-vermillion-700);
+  --color-primary-soft: var(--p-vermillion-100);
+
+  --color-accent: var(--p-cyan-700); /* 文字・リンクに使える安全な水色 */
+  --color-accent-decorative: var(--p-cyan-500); /* 装飾専用。濃色文字の背景／アイコン／境界線にのみ使う */
+  --color-accent-soft: var(--p-cyan-100);
+
+  --color-highlight: var(--p-gold-500); /* 装飾専用。区切り線・小バッジのみ */
+  --color-highlight-soft: var(--p-gold-100);
+
+  --color-focus: var(--p-cyan-700);
+
+  /* ---- タイポグラフィ ---- */
+  --font-sans:
+    'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'BIZ UDPGothic', Meiryo, 'Noto Sans JP',
+    system-ui, sans-serif;
+  --font-serif: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: clamp(1.0625rem, 0.4vw + 1rem, 1.125rem);
+  --fs-xl: clamp(1.25rem, 0.8vw + 1rem, 1.5rem);
+  --fs-2xl: clamp(1.5rem, 1.6vw + 1rem, 2rem);
+  --fs-3xl: clamp(1.875rem, 2.6vw + 1rem, 2.75rem);
+  --fs-4xl: clamp(2.25rem, 4vw + 1rem, 3.5rem);
+
+  --lh-tight: 1.35; /* 見出し。日本語は 1.2 だと詰まりすぎる */
+  --lh-base: 1.5;
+  --lh-prose: 1.9; /* 本文。欧文の 1.5 より広く取るのが日本語可読性の要 */
+  --ls-tight: 0.01em;
+  --ls-base: 0.04em; /* 日本語は微量のトラッキングで格段に読みやすくなる */
+
+  /* ---- 余白（8px グリッド） ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  /* ---- 形の質感：柔らかめベース + 幾何学的アクセント ----
+   * 小さい要素ほど締まった半径に、大きい要素ほど生成りの紙のような柔らかさを残す。
+   * カードには影と極薄ボーダーを併用する（影だけでは柔らかさに寄りすぎ、線だけでは硬くなりすぎるため）。
+   */
+  --radius-sm: 4px; /* バッジ・チップ・ボタン */
+  --radius-md: 10px; /* カード・入力欄 */
+  --radius-lg: 16px; /* 大きいパネル・ヒーロー領域 */
+  --radius-full: 999px; /* アバターの円形マスク・SNS アイコンなど、人物に関わる部分のみ */
+
+  --shadow-sm: 0 1px 2px rgba(36, 27, 26, 0.06); /* --p-ink-900 由来。冷たいグレーの影にしない */
+  --shadow-md: 0 4px 16px rgba(36, 27, 26, 0.08);
+  --shadow-lg: 0 12px 40px rgba(36, 27, 26, 0.1);
+  --border-width: 1px; /* カードに影と併用する極薄ボーダー */
+
+  --container: 1120px;
+  --container-narrow: 720px;
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 240ms;
+}

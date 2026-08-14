@@ -1,0 +1,100 @@
+---
+// news の一覧ページで使うページネーション。/news/, /news/2/ ... のパターンに合わせる。
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string; // 例: '/news/'
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+
+function pageUrl(page: number): string {
+  return page <= 1 ? basePath : `${basePath}${page}/`;
+}
+
+const prevUrl = currentPage > 1 ? pageUrl(currentPage - 1) : null;
+const nextUrl = currentPage < totalPages ? pageUrl(currentPage + 1) : null;
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+---
+
+{
+  totalPages > 1 && (
+    <nav class="pagination" aria-label="ページネーション">
+      <a
+        class="pagination__nav"
+        href={prevUrl ?? undefined}
+        aria-disabled={!prevUrl}
+        rel="prev"
+      >
+        前へ
+      </a>
+      <ul class="pagination__list">
+        {pages.map((page) => (
+          <li>
+            <a
+              href={pageUrl(page)}
+              class:list={['pagination__link', page === currentPage && 'is-current']}
+              aria-current={page === currentPage ? 'page' : undefined}
+            >
+              {page}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a
+        class="pagination__nav"
+        href={nextUrl ?? undefined}
+        aria-disabled={!nextUrl}
+        rel="next"
+      >
+        次へ
+      </a>
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-4);
+    margin-top: var(--sp-8);
+  }
+
+  .pagination__list {
+    display: flex;
+    gap: var(--sp-1);
+  }
+
+  .pagination__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2em;
+    height: 2.2em;
+    padding-inline: var(--sp-1);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+  }
+  .pagination__link:hover {
+    background: var(--color-surface-muted);
+  }
+  .pagination__link.is-current {
+    background: var(--color-primary);
+    color: var(--color-text-invert);
+  }
+
+  .pagination__nav {
+    font-size: var(--fs-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+  .pagination__nav[aria-disabled='true'] {
+    pointer-events: none;
+    color: var(--color-text-muted);
+    opacity: 0.5;
+  }
+</style>

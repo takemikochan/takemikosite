@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="サムネイル準備中">
+  <rect width="1200" height="630" fill="#f7eeea"/>
+  <rect x="14" y="14" width="1172" height="602" fill="none" stroke="#eedfd9" stroke-width="2" stroke-dasharray="10 8" rx="14"/>
+  <polygon points="600,255 650,305 600,355 550,305" fill="#f7c96e"/>
+  <text x="600" y="410" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#6b5a56" letter-spacing="2">THUMBNAIL 01</text>
+</svg>

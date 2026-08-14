@@ -1,0 +1,130 @@
+---
+// NavDrawer は BaseLayout 側で <header> の外（直下の兄弟）にレンダリングする。
+// position:fixed のドロワーを position:sticky な header の内側に置くと、
+// header の実寸（コンテンツ分の高さしかない）が fixed 要素の包含ブロックとして
+// 採用されてしまい、ドロワーの高さが header と同じ数十 px に潰れる実害があるため。
+import { nav } from '../../data/nav';
+import { site } from '../../data/site';
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="header__brand">
+      <span class="header__brand-name">{site.name}</span>
+      <span class="header__brand-short">{site.shortName.ja}</span>
+    </a>
+
+    <nav class="header__nav" aria-label="メインナビゲーション">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button
+      type="button"
+      class="header__toggle"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="nav-drawer"
+    >
+      <span class="sr-only">メニューを開く</span>
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path
+          d="M3 6h18M3 12h18M3 18h18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--sp-4);
+  }
+
+  .header__brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    text-decoration: none;
+    color: var(--color-text);
+  }
+  .header__brand-name {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+  }
+  .header__brand-short {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+
+  .header__nav {
+    display: none;
+  }
+  .header__nav ul {
+    display: flex;
+    gap: var(--sp-6);
+  }
+  .header__nav a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+  }
+  .header__nav a:hover {
+    color: var(--color-primary);
+  }
+
+  .header__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    padding: var(--sp-2);
+    cursor: pointer;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (min-width: 768px) {
+    .header__nav {
+      display: block;
+    }
+    .header__toggle {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,166 @@
+/*
+ * リセット + 日本語タイポグラフィ基礎 + アクセシビリティ + スクロール登場演出。
+ * ブレークポイントは CSS カスタムプロパティがメディアクエリの条件に使えないため、
+ * 各コンポーネント側で素のピクセル値をベタ書きする（sm:480 / md:768 / lg:1024 / xl:1280）。
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  letter-spacing: var(--ls-base);
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* 日本語見出し：約物のアキを詰める。本文にはかけない（可読性が落ちるため） */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  font-feature-settings: 'palt' 1;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* 改行制御：日本語の禁則・破綻を防ぐ */
+body,
+p,
+li,
+dd,
+dt {
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+
+a {
+  color: var(--color-accent);
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---- コンテナ ---- */
+.container {
+  width: min(100% - var(--sp-5) * 2, var(--container));
+  margin-inline: auto;
+}
+
+.container-narrow {
+  width: min(100% - var(--sp-5) * 2, var(--container-narrow));
+  margin-inline: auto;
+}
+
+/* ---- アクセシビリティ ---- */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- 幾何学アクセント：菱形モチーフ ----
+ * イーサリアムヘアクリップの形状を、新規イラストなしで UI に持ち込む装飾。
+ * 見出し・カード周りの装飾に限定し、本文中の箇条書き記号としては使わない。
+ */
+.diamond-bullet {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--color-accent-decorative);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  flex-shrink: 0;
+}
+
+/* ---- スクロール連動の登場演出 ----
+ * .js [data-reveal] にのみ隠す指定をかけることで、JavaScript が無効・停止した
+ * 環境では常に「最初から全部見えている」状態にフォールバックする。
+ * .js は BaseLayout の同期スクリプトが <html> に付与する。
+ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
+}
+
+.js [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* カードの並びは data-reveal-group 配下の子要素に transition-delay を自動付与し、
+   1件ずつ発火しているように見せる（グリッド全体が同時にフェードインする野暮ったさを回避） */
+[data-reveal-group] > *:nth-child(1) {
+  transition-delay: 0ms;
+}
+[data-reveal-group] > *:nth-child(2) {
+  transition-delay: 80ms;
+}
+[data-reveal-group] > *:nth-child(3) {
+  transition-delay: 160ms;
+}
+[data-reveal-group] > *:nth-child(4) {
+  transition-delay: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,17 +1,112 @@
 ---
-
+// Phase 1 時点の仮実装。レイアウト・トークン・モーション基盤の統合確認用。
+// 実際のトップページ構成（告知バー・ヒーロー・最新のお知らせ・About・ナビハブ・SNS一覧）は Phase 2 で実装する。
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+import PlaceholderImage from '../components/ui/PlaceholderImage.astro';
+import { site } from '../data/site';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={site.name}>
+  <main class="container hero">
+    <div class="hero__content">
+      <p class="hero__eyebrow">{site.shortName.en}</p>
+      <h1 class="hero__title">VTuberとNFTを結ぶ、巫女。</h1>
+      <p class="hero__lead">{site.description}</p>
+      <div class="hero__actions">
+        <Button href="/profile/">プロフィール</Button>
+        <Button href="/goods/" variant="secondary">グッズ・リンク</Button>
+      </div>
+    </div>
+    <div class="hero__kv">
+      <img src="/placeholder/kv.svg" alt="" width="800" height="1000" />
+    </div>
+  </main>
+
+  <section class="container demo-section">
+    <SectionHeading title="モーション基盤の確認" subtitle="Phase 1 integration check" />
+    <div class="demo-grid" data-reveal-group>
+      <div data-reveal><Card><PlaceholderImage ratio="4/3" /><p class="card-pad">カード 1</p></Card></div>
+      <div data-reveal><Card><PlaceholderImage ratio="4/3" /><p class="card-pad">カード 2</p></Card></div>
+      <div data-reveal><Card><PlaceholderImage ratio="4/3" /><p class="card-pad">カード 3</p></Card></div>
+    </div>
+    <p data-reveal class="badges">
+      <Badge variant="primary">お知らせ</Badge>
+      <Badge variant="accent">プログラミング・AI</Badge>
+      <Badge variant="gold">NEW</Badge>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--sp-9) var(--sp-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    /* flex item がテキストの内容幅で無限に広がろうとして親をはみ出すのを防ぐ */
+    min-width: 0;
+  }
+  .hero__eyebrow {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero__title {
+    font-size: var(--fs-4xl);
+  }
+  .hero__lead {
+    max-width: 34em;
+    color: var(--color-text-muted);
+  }
+  .hero__actions {
+    display: flex;
+    gap: var(--sp-4);
+    flex-wrap: wrap;
+  }
+  .hero__kv {
+    max-width: 320px;
+  }
+
+  .demo-section {
+    padding-block: var(--sp-8);
+  }
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-5);
+  }
+  .card-pad {
+    margin: 0;
+    padding: var(--sp-4);
+  }
+  .badges {
+    display: flex;
+    gap: var(--sp-3);
+    margin-top: var(--sp-6);
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      flex-direction: row;
+      align-items: center;
+    }
+    .hero__content {
+      flex: 1;
+    }
+    .hero__kv {
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+  }
+</style>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="キービジュアル準備中">
+  <rect width="800" height="1000" fill="#fdf8f6"/>
+  <rect x="16" y="16" width="768" height="968" fill="none" stroke="#eedfd9" stroke-width="2" stroke-dasharray="10 8" rx="16"/>
+  <polygon points="400,410 460,470 400,530 340,470" fill="#00b7d6"/>
+  <text x="400" y="600" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#6b5a56" letter-spacing="2">KEY VISUAL — 4:5</text>
+  <text x="400" y="632" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#6b5a56">画像準備中</text>
+</svg>

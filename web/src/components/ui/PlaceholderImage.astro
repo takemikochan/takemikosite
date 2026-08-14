@@ -1,0 +1,36 @@
+---
+// CMS 側の画像が未設定のとき（thumbnail/image が null）のフォールバック表示。
+// data/profile.ts の kv.svg / avatar.svg のような「静的な仮素材ファイル」とは別物 ——
+// こちらは記事・制作実績・グッズカードなど、CMS 由来の画像が空のときに使う汎用コンポーネント。
+interface Props {
+  ratio?: '4/5' | '1/1' | '16/9' | '4/3';
+  label?: string;
+}
+
+const { ratio = '4/3', label = '画像準備中' } = Astro.props;
+---
+
+<div class="placeholder" style={`aspect-ratio: ${ratio.replace('/', ' / ')}`}>
+  <span class="diamond-bullet" aria-hidden="true"></span>
+  <span class="placeholder__label">{label}</span>
+</div>
+
+<style>
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    width: 100%;
+    background: var(--color-surface-muted);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+  }
+
+  .placeholder__label {
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-base);
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  level?: 'h2' | 'h3';
+}
+
+const { title, subtitle, level = 'h2' } = Astro.props;
+const Tag = level;
+---
+
+<div class="section-heading">
+  <span class="diamond-bullet" aria-hidden="true"></span>
+  <div>
+    <Tag class="section-heading__title">{title}</Tag>
+    {subtitle && <p class="section-heading__subtitle">{subtitle}</p>}
+  </div>
+</div>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+  }
+
+  .section-heading__title {
+    font-size: var(--fs-2xl);
+  }
+
+  .section-heading__subtitle {
+    margin: var(--sp-1) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+</style>
