@@ -1,0 +1,40 @@
+name: Deploy (Content / 記事更新)
+on:
+  repository_dispatch:
+    types: [cms-update]
+  workflow_dispatch:
+  schedule:
+    - cron: '10 15 * * *' # UTC 15:10 = JST 00:10。予約公開の取りこぼし保険
+concurrency: { group: deploy-site, cancel-in-progress: false }
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - name: Build
+        working-directory: web
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+          PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID }}
+        run: pnpm build
+      - uses: ./.github/actions/deploy-dist
+        with:
+          dist-path: web/dist
+          ref: ${{ github.sha }}
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-host: ${{ secrets.SSH_HOST }}
+          ssh-user: ${{ secrets.SSH_USER }}
+          ssh-port: ${{ secrets.SSH_PORT }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          deploy-path: ${{ secrets.DEPLOY_PATH }}

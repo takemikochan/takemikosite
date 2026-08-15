@@ -1,0 +1,10 @@
+# 配置先: /etc/fail2ban/jail.d/takemiko-cms.local
+# 対応するフィルタ: /etc/fail2ban/filter.d/takemiko-cms.conf
+[takemiko-cms]
+enabled  = true
+filter   = takemiko-cms
+logpath  = /var/log/nginx/cms.takemiko.com.access.log
+port     = http,https
+maxretry = 5
+findtime = 600
+bantime  = 3600

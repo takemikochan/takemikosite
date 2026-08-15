@@ -1,0 +1,18 @@
+[Unit]
+Description=Takemiko Strapi CMS
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/opt/takemiko-cms
+EnvironmentFile=/etc/takemiko-cms.env
+ExecStart=/usr/bin/node node_modules/.bin/strapi start
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
