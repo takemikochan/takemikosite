@@ -185,12 +185,25 @@ curl.exe -I https://cms.takemiko.com/admin
 
 作成後、右上のプロフィールメニュー → Interface language を **日本語** に変更 → 必ず「保存」ボタンを押してください（保存しないと反映されません）。
 
-続けて、Phase 3 でローカルに投入した内容と同じものを本番に投入してください：
-- カテゴリ 5件（お知らせ／配信／イラスト／グッズ／プログラミング・AI）
-- 記事（お知らせ）
-- 制作実績（Works）
-- SNS リンク（実アカウント）
-- グッズ／支援リンク（NFT リンクは Draft のままで OK）
+続けて、`transfer` 機能でローカル（Phase 3 で投入済み）のコンテンツをそのまま本番へ転送します（手作業での再入力は不要です）。
+
+本番の管理画面で Transfer Token を発行してください：
+Settings → Transfer Tokens → Create new Transfer Token
+- Permission: **Push**（ローカル→本番の一方向）
+- 発行されたトークンは Claude に共有せず、次のコマンドに直接使ってください
+
+ローカルの PostgreSQL が起動していない場合は起動します（PowerShell、リポジトリのルートで）:
+```powershell
+pg_ctl.exe -D cms\.pgdata -l cms\.pgdata\log start
+```
+
+ローカルからコンテンツを転送します:
+```powershell
+cd cms
+npx strapi transfer --to https://cms.takemiko.com/admin --to-token <発行したトークン>
+```
+
+確認プロンプトが出たら `y` で進めてください。完了後、本番の管理画面でカテゴリ・記事・Works・SNSリンク・グッズリンクが反映されているか確認してください（NFT リンクは Draft のままで OK です）。
 
 ## 8. 本番 API トークンと GitHub Secrets（ブラウザ + ローカルPC）
 
