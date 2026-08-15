@@ -4,6 +4,7 @@
 import InlineText from './InlineText.astro';
 import type { InlineNode } from './InlineText.astro';
 import Heading from './Heading.astro';
+import CmsImage from '../ui/CmsImage.astro';
 
 interface ImageBlockData {
   url: string;
@@ -86,13 +87,12 @@ for (const block of blocks) {
 
       if (block.type === 'image' && block.image) {
         return (
-          <img
+          <CmsImage
             src={block.image.url}
-            width={block.image.width}
-            height={block.image.height}
+            width={block.image.width ?? 1200}
+            height={block.image.height ?? 630}
             alt={block.image.alternativeText ?? ''}
             loading="lazy"
-            decoding="async"
           />
         );
       }

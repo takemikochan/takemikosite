@@ -4,6 +4,7 @@ import type { GetStaticPaths } from 'astro';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 import BlocksRenderer from '../../components/news/BlocksRenderer.astro';
 import NewsMeta from '../../components/news/NewsMeta.astro';
+import CmsImage from '../../components/ui/CmsImage.astro';
 import { getExcerpt, sortPinnedFirst } from '../../lib/news';
 import { profile } from '../../data/profile';
 import { site } from '../../data/site';
@@ -62,7 +63,7 @@ const breadcrumbLdSafe = JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c');
 
   {
     thumbnail && (
-      <img
+      <CmsImage
         src={thumbnail.url}
         width={thumbnail.width}
         height={thumbnail.height}

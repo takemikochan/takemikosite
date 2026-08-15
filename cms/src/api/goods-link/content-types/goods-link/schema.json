@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "goods_links",
+  "info": {
+    "singularName": "goods-link",
+    "pluralName": "goods-links",
+    "displayName": "グッズリンク",
+    "description": "グッズ/EC/支援/NFTリンク一覧"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": ["ec", "support", "nft"],
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "badge": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

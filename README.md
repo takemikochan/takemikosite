@@ -14,10 +14,28 @@ worker/  お問い合わせフォームの受け口（Cloudflare Worker）
 
 ## 開発
 
-- Node: `.nvmrc` で 22 系に固定
+- Node: `.nvmrc` で 24 系に固定（開発機に既存インストール済みのバージョンを採用。§1 参照）
 - `web/`: `pnpm install && pnpm dev`
-- `cms/`: `npm install && npm run develop`
+- `cms/`: `npm install && npm run develop`（下記「ローカル PostgreSQL」を先に起動しておくこと）
 - `worker/`: `npm install && npx wrangler dev`
+
+### ローカル PostgreSQL（`cms/` 用）
+
+Windows のグローバルな PostgreSQL サービスとは別に、**プロジェクト専用のクラスタ**を `cms/.pgdata/` に用意している（venv のようにデータを分離する運用）。ポートは 5433。
+
+起動:
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe" -D "D:\Projects\takemikosite\cms\.pgdata" -l "D:\Projects\takemikosite\cms\.pgdata\server.log" start
+```
+
+停止:
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe" -D "D:\Projects\takemikosite\cms\.pgdata" stop
+```
+
+接続情報は `cms/.env` の `DATABASE_*`（DB名 `takemiko_cms`、ユーザー `postgres`）。パスワードは `.env` 内に記載（git 管理外）。
+
+なお winget でインストールした PostgreSQL 18 は、既定でグローバルな Windows サービス（`postgresql-x64-18`、ポート5432、自動起動）も一緒に有効化される。このプロジェクトでは使わないため、不要であれば管理者権限で無効化してよい（本セッションでは権限不足のため未実施）。
 
 ## デプロイ
 

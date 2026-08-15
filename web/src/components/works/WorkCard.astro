@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Card from '../ui/Card.astro';
 import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import CmsImage from '../ui/CmsImage.astro';
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
 
@@ -23,13 +24,12 @@ const tags = techTags
   <div class="work-card">
     {
       thumbnail ? (
-        <img
+        <CmsImage
           src={thumbnail.url}
           width={thumbnail.width}
           height={thumbnail.height}
           alt={thumbnail.alternativeText ?? ''}
           loading="lazy"
-          decoding="async"
           class="work-card__thumb"
         />
       ) : (

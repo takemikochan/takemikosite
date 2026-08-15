@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sns_links",
+  "info": {
+    "singularName": "sns-link",
+    "pluralName": "sns-links",
+    "displayName": "SNSリンク",
+    "description": "SNSリンク一覧"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": ["x", "youtube", "twitch", "pixiv", "booth", "suzuri", "other"],
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "handle": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Card from '../ui/Card.astro';
 import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import CmsImage from '../ui/CmsImage.astro';
 import NewsMeta from './NewsMeta.astro';
 import { getExcerpt } from '../../lib/news';
 
@@ -18,13 +19,12 @@ const excerpt = getExcerpt(entry);
 <Card href={`/news/${slug}/`}>
   {
     thumbnail ? (
-      <img
+      <CmsImage
         src={thumbnail.url}
         width={thumbnail.width}
         height={thumbnail.height}
         alt={thumbnail.alternativeText ?? ''}
         loading="lazy"
-        decoding="async"
         class="news-card__thumb"
       />
     ) : (

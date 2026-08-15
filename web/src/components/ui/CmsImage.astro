@@ -1,0 +1,45 @@
+---
+// CMS（Strapi）由来の画像は絶対URL、モックのプレースホルダーはローカル相対パス。
+// 絶対URLの場合のみ astro:assets の <Image> でビルド時に取り込み・最適化する
+// （訪問者のブラウザが Strapi へ直接アクセスしないようにするため。計画のリスク対策）。
+// 相対パス（モック）は astro:assets の対象外の public/ 配下なので、そのまま <img> で出す。
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const { src, width, height, alt, class: className, loading = 'lazy', fetchpriority } = Astro.props;
+const isRemote = /^https?:\/\//.test(src);
+---
+
+{
+  isRemote ? (
+    <Image
+      src={src}
+      width={width}
+      height={height}
+      alt={alt}
+      class={className}
+      loading={loading}
+      fetchpriority={fetchpriority}
+    />
+  ) : (
+    <img
+      src={src}
+      width={width}
+      height={height}
+      alt={alt}
+      class={className}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+    />
+  )
+}

@@ -9,20 +9,30 @@ node_modules/
 # Astro（web/）
 web/dist/
 web/.astro/
-web/dist.tar.gz         # release.sh が生成する一時ファイル
+# release.sh が生成する一時ファイル
+web/dist.tar.gz
 
 # Strapi（cms/）
-cms/dist/                # TypeScript コンパイル出力
-cms/build/                # admin パネルのビルド出力
+# TypeScript コンパイル出力
+cms/dist/
+# admin パネルのビルド出力
+cms/build/
 cms/.cache/
-cms/.tmp/                 # ローカル開発時の SQLite 等
+# ローカル開発時の SQLite 等
+cms/.tmp/
+# ローカル専用 PostgreSQL クラスタ（プロジェクトスコープの venv 的インスタンス）
+cms/.pgdata/
 cms/public/uploads/*
-!cms/public/uploads/.gitkeep   # アップロード画像は git 管理外（§6.8 のバックアップで守る）
-cms/exports/               # strapi export の出力
+# アップロード画像は git 管理外（§6.8 のバックアップで守る）
+!cms/public/uploads/.gitkeep
+# strapi export の出力
+cms/exports/
 
 # Cloudflare Worker（worker/）
-worker/.wrangler/          # wrangler のローカル状態キャッシュ
-worker/.dev.vars           # ローカル開発用シークレット
+# wrangler のローカル状態キャッシュ
+worker/.wrangler/
+# ローカル開発用シークレット
+worker/.dev.vars
 
 # OS / エディタ
 .DS_Store

@@ -9,5 +9,8 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   integrations: [sitemap()],
-  // Phase 3 で Strapi 導入時に image.domains へ cms.takemiko.com を追加する
+  image: {
+    // CMS 画像をビルド時に取り込み最適化する。訪問者へ Strapi を直配信しない（計画のリスク対策）。
+    domains: ['localhost', 'cms.takemiko.com'],
+  },
 });

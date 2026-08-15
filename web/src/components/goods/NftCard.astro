@@ -3,6 +3,7 @@
 import type { CollectionEntry } from 'astro:content';
 import Card from '../ui/Card.astro';
 import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import CmsImage from '../ui/CmsImage.astro';
 import Badge from '../ui/Badge.astro';
 import Icon from '../ui/Icon.astro';
 
@@ -18,13 +19,12 @@ const { title, description, url, badge, image } = entry.data;
   <div class="nft-card">
     {
       image ? (
-        <img
+        <CmsImage
           src={image.url}
           width={image.width}
           height={image.height}
           alt={image.alternativeText ?? ''}
           loading="lazy"
-          decoding="async"
           class="nft-card__image"
         />
       ) : (
