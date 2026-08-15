@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "release": "bash scripts/release.sh"
+    "release": "scripts\\release.cmd"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

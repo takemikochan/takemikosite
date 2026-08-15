@@ -85,38 +85,54 @@ ssh -i C:\Users\mikoto\.ssh\takemiko_github -p 22 deploy@<VPSのホスト名ま�
 ```
 ログインできれば成功（`exit` で抜けてください）。
 
-## 5. nginx と certbot をインストールし、サイト設定を配置する（VPS・bash）
+## 5. nginx と certbot をインストールする（VPS・bash）
 
 ```bash
 sudo apt update
 sudo apt install -y nginx certbot python3-certbot-nginx
 ```
 
-このリポジトリの `deploy/nginx/takemiko.com.conf` を VPS に転送します（ローカルPC・PowerShellから、リポジトリのルートで実行）:
+インストール直後は nginx がデフォルト設定で自動起動していますが、次の手順で証明書を取るために一旦止めます:
+```bash
+sudo systemctl stop nginx
+```
+
+## 6. TLS 証明書を発行する（VPS・bash）
+
+**⚠️ サイト設定の配置より先に証明書を取得します。** `deploy/nginx/takemiko.com.conf` は証明書ファイルのパスを参照しているため、証明書が無い状態でこの設定を読み込ませると `nginx -t` が失敗します（鶏と卵の問題）。
+
+`--standalone` は nginx の設定を一切使わず、証明書取得専用の一時サーバーを自分で port 80 に立てる方式です。nginx の vhost 設定が無くても動くため、3ドメイン分をまとめて取得できます:
+
+```bash
+sudo certbot certonly --standalone -d takemiko.com -d www.takemiko.com -d cms.takemiko.com
+```
+
+初回はメールアドレス入力・利用規約同意を対話式で聞かれます（秘密情報ではないため、そのまま入力してください）。
+
+成功すると `/etc/letsencrypt/live/takemiko.com/fullchain.pem` などが作られます。
+
+## 7. サイト設定を配置する（証明書取得後）
+
+このリポジトリの `deploy/nginx/takemiko.com.conf` を VPS に転送します（ローカルPC・PowerShellから、リポジトリのルートで実行）。
+
+**手順4で作った deploy 鍵をそのまま使ってください**（`/tmp` はどのユーザーからも書き込めるため、普段使いの sudo ユーザーの認証情報は不要です）:
 ```powershell
-scp deploy\nginx\takemiko.com.conf <sudoユーザー>@<VPSホスト>:/tmp/takemiko.com.conf
+scp -i C:\Users\mikoto\.ssh\takemiko_github -P 22 deploy\nginx\takemiko.com.conf deploy@<VPSホスト>:/tmp/takemiko.com.conf
 ```
 
 VPS 側で配置:
 ```bash
 sudo mv /tmp/takemiko.com.conf /etc/nginx/sites-available/takemiko.com.conf
 sudo ln -s /etc/nginx/sites-available/takemiko.com.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
-sudo systemctl reload nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
 ```
 
-## 6. TLS 証明書を発行する（VPS・bash）
+証明書は既に手順6で取得済みなので、今度は `nginx -t` が通るはずです。
 
-```bash
-sudo certbot --nginx -d takemiko.com -d www.takemiko.com -d cms.takemiko.com
-```
-
-`cms.takemiko.com` はまだ nginx 設定が無いため、certbot が「該当する server ブロックが見つからない」と聞いてくる場合があります。その場合は `takemiko.com` と `www.takemiko.com` の2つだけで先に発行し、`cms.takemiko.com` は Phase 5 で改めて発行してください:
-```bash
-sudo certbot --nginx -d takemiko.com -d www.takemiko.com
-```
-
-## 7. SSH known_hosts を取得する（ローカルPC・PowerShell）
+## 8. SSH known_hosts を取得する（ローカルPC・PowerShell）
 
 GitHub Actions が「知らないホストへの接続」を拒否しないよう、事前に host key を登録します。
 
@@ -127,7 +143,7 @@ Get-Content takemiko_known_hosts.txt
 
 この中身（**秘密情報ではありません**。公開鍵情報です）を、次の GitHub Secrets 登録で使います。
 
-## 8. GitHub Secrets を登録する
+## 9. GitHub Secrets を登録する
 
 GitHub リポジトリ → Settings → Secrets and variables → Actions → New repository secret で、以下 6 つを登録してください（この時点で `STRAPI_URL` 等は不要です）。
 
@@ -137,17 +153,17 @@ GitHub リポジトリ → Settings → Secrets and variables → Actions → Ne
 | `SSH_HOST` | VPS のホスト名または IP |
 | `SSH_USER` | `deploy` |
 | `SSH_PORT` | `22` |
-| `SSH_KNOWN_HOSTS` | 手順7で取得した `takemiko_known_hosts.txt` の中身 |
+| `SSH_KNOWN_HOSTS` | 手順8で取得した `takemiko_known_hosts.txt` の中身 |
 | `DEPLOY_PATH` | `/var/www/takemiko` |
 
-## 9. GitHub CLI を認証する（ローカルPC、初回デプロイに必要）
+## 10. GitHub CLI を認証する（ローカルPC、初回デプロイに必要）
 
 ```powershell
 gh auth login
 ```
 ブラウザでの認証を選んでください（パスワード入力は不要な OAuth フローです）。
 
-## 10. 初回デプロイ
+## 11. 初回デプロイ
 
 ```powershell
 cd web
@@ -156,7 +172,7 @@ pnpm release
 
 成功すると GitHub Release が作られ、Actions が自動で VPS へ配送します。GitHub リポジトリの Actions タブで進捗を確認できます。
 
-## 11. 動作確認（ローカルPCから）
+## 12. 動作確認(ローカルPCから)
 
 ```powershell
 curl.exe -I https://takemiko.com/
