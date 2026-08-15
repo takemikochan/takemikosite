@@ -1,0 +1,51 @@
+name: Deploy dist to VPS
+description: dist/ を VPS へ atomic に配置する
+inputs:
+  dist-path:   { required: true }
+  ref:         { required: true, description: リリース識別子（コミット SHA） }
+  ssh-key:     { required: true }
+  ssh-host:    { required: true }
+  ssh-user:    { required: true }
+  ssh-port:    { required: true }
+  known-hosts: { required: true }
+  deploy-path: { required: true }
+runs:
+  using: composite
+  steps:
+    - name: Sanity check
+      shell: bash
+      working-directory: ${{ inputs.dist-path }}
+      run: |
+        test -f index.html
+        test -f profile/index.html
+        test -f works/index.html
+        test -f goods/index.html
+        test -f news/index.html
+        test -f sitemap-index.xml
+        test "$(find news -mindepth 1 -maxdepth 1 -type d | wc -l)" -ge 1
+    - name: Setup SSH
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh && chmod 700 ~/.ssh
+        printf '%s\n' "${{ inputs.ssh-key }}"     > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        printf '%s\n' "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
+    - name: Upload & activate (atomic)
+      shell: bash
+      env:
+        BASE: ${{ inputs.deploy-path }}
+        HOST: ${{ inputs.ssh-host }}
+        USER: ${{ inputs.ssh-user }}
+        PORT: ${{ inputs.ssh-port }}
+        REF:  ${{ inputs.ref }}
+        SRC:  ${{ inputs.dist-path }}
+      run: |
+        SSHOPT="-p $PORT -i $HOME/.ssh/id_ed25519"
+        REL="$BASE/releases/${REF:0:12}-$(date +%s)"
+        ssh $SSHOPT "$USER@$HOST" "mkdir -p '$REL'"
+        rsync -az --delete -e "ssh $SSHOPT" "$SRC/" "$USER@$HOST:$REL/"
+        ssh $SSHOPT "$USER@$HOST" "
+          ln -sfn '$REL' '$BASE/current.tmp' &&
+          mv -T '$BASE/current.tmp' '$BASE/current' &&
+          ls -1dt $BASE/releases/*/ | tail -n +6 | xargs -r rm -rf
+        "

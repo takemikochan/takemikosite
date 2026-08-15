@@ -1,0 +1,26 @@
+name: Deploy (Release / コード変更)
+on:
+  release:
+    types: [published]
+concurrency: { group: deploy-site, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download built dist
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          gh release download "${{ github.event.release.tag_name }}" -p dist.tar.gz -D .
+          mkdir -p dist && tar -xzf dist.tar.gz -C dist
+      - uses: ./.github/actions/deploy-dist
+        with:
+          dist-path:   dist
+          ref:         ${{ github.sha }}
+          ssh-key:     ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-host:    ${{ secrets.SSH_HOST }}
+          ssh-user:    ${{ secrets.SSH_USER }}
+          ssh-port:    ${{ secrets.SSH_PORT }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          deploy-path: ${{ secrets.DEPLOY_PATH }}
