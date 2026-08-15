@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  entry: CollectionEntry<'works'>;
+}
+
+const { entry } = Astro.props;
+const { title, summary, thumbnail, liveUrl, techTags } = entry.data;
+const tags = techTags
+  ? techTags
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+  : [];
+---
+
+<Card>
+  <div class="work-card">
+    {
+      thumbnail ? (
+        <img
+          src={thumbnail.url}
+          width={thumbnail.width}
+          height={thumbnail.height}
+          alt={thumbnail.alternativeText ?? ''}
+          loading="lazy"
+          decoding="async"
+          class="work-card__thumb"
+        />
+      ) : (
+        <PlaceholderImage ratio="16/9" />
+      )
+    }
+    <div class="work-card__body">
+      <h3 class="work-card__title">{title}</h3>
+      {summary && <p class="work-card__summary">{summary}</p>}
+      {
+        tags.length > 0 && (
+          <div class="work-card__tags">
+            {tags.map((tag) => (
+              <Badge variant="accent">{tag}</Badge>
+            ))}
+          </div>
+        )
+      }
+      <Button href={liveUrl} target="_blank" variant="secondary">
+        サイトを見る
+      </Button>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .work-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .work-card__body {
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+  .work-card__title {
+    font-size: var(--fs-lg);
+  }
+  .work-card__summary {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .work-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+</style>

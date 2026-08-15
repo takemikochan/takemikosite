@@ -1,0 +1,42 @@
+---
+import { profile } from '../../data/profile';
+---
+
+<section class="container about-teaser" data-reveal>
+  <img src={profile.avatar} alt="" width="800" height="800" class="about-teaser__avatar" />
+  <div class="about-teaser__body">
+    <p class="about-teaser__lead">{profile.bio[0]}</p>
+    <a href="/profile/" class="about-teaser__link">詳しく見る</a>
+  </div>
+</section>
+
+<style>
+  .about-teaser {
+    padding-block: var(--sp-8);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .about-teaser__avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .about-teaser__body {
+    min-width: 0;
+  }
+  .about-teaser__lead {
+    margin: 0 0 var(--sp-2);
+    color: var(--color-text);
+  }
+  .about-teaser__link {
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+  }
+  .about-teaser__link:hover {
+    color: var(--color-primary);
+  }
+</style>

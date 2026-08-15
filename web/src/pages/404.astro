@@ -1,0 +1,39 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<PageLayout title="ページが見つかりません">
+  <div class="not-found">
+    <p class="not-found__code">404</p>
+    <h1 class="not-found__title">ページが見つかりませんでした</h1>
+    <p class="not-found__desc">
+      お探しのページは移動または削除された可能性があります。
+    </p>
+    <Button href="/">トップへ戻る</Button>
+  </div>
+</PageLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--sp-4);
+    padding-block: var(--sp-9);
+  }
+  .not-found__code {
+    margin: 0;
+    font-size: var(--fs-4xl);
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .not-found__title {
+    font-size: var(--fs-xl);
+  }
+  .not-found__desc {
+    color: var(--color-text-muted);
+    max-width: 30em;
+  }
+</style>

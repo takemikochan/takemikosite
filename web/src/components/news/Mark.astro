@@ -1,0 +1,48 @@
+---
+// Strapi Blocks のテキストマーク(bold/italic/underline/strikethrough/code)を
+// set:html を使わずコンポーネント合成で表現する。
+// 複数マークが同時に true な場合（例: bold+italic）は、1つずつ剥がしながら
+// 自身を再帰呼び出しして正しくネストさせる。
+interface Props {
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  code?: boolean;
+}
+const { bold, italic, underline, strikethrough, code } = Astro.props;
+---
+
+{
+  code ? (
+    <code>
+      <Astro.self bold={bold} italic={italic} underline={underline} strikethrough={strikethrough} code={false}>
+        <slot />
+      </Astro.self>
+    </code>
+  ) : strikethrough ? (
+    <s>
+      <Astro.self bold={bold} italic={italic} underline={underline} strikethrough={false} code={false}>
+        <slot />
+      </Astro.self>
+    </s>
+  ) : underline ? (
+    <u>
+      <Astro.self bold={bold} italic={italic} underline={false} strikethrough={false} code={false}>
+        <slot />
+      </Astro.self>
+    </u>
+  ) : italic ? (
+    <em>
+      <Astro.self bold={bold} italic={false} underline={false} strikethrough={false} code={false}>
+        <slot />
+      </Astro.self>
+    </em>
+  ) : bold ? (
+    <strong>
+      <slot />
+    </strong>
+  ) : (
+    <slot />
+  )
+}

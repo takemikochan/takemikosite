@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SectionHeading from '../ui/SectionHeading.astro';
+import NewsList from '../news/NewsList.astro';
+
+interface Props {
+  entries: CollectionEntry<'news'>[];
+}
+
+const { entries } = Astro.props;
+---
+
+<section class="container latest-news">
+  <div class="latest-news__header">
+    <SectionHeading title="最新のお知らせ" />
+    <a href="/news/" class="latest-news__all">すべて見る</a>
+  </div>
+  <NewsList entries={entries} />
+</section>
+
+<style>
+  .latest-news {
+    padding-block: var(--sp-8);
+  }
+  .latest-news__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-4);
+  }
+  .latest-news__all {
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .latest-news__all:hover {
+    color: var(--color-primary);
+  }
+</style>

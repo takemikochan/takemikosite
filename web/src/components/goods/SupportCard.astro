@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  entry: CollectionEntry<'goodsLinks'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, url } = entry.data;
+---
+
+<Card href={url} target="_blank">
+  <div class="support-card">
+    <span class="diamond-bullet" aria-hidden="true"></span>
+    <div class="support-card__body">
+      <h3 class="support-card__title">{title}</h3>
+      {description && <p class="support-card__desc">{description}</p>}
+      <span class="support-card__link">
+        支援する
+        <Icon name="external" size={14} />
+      </span>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .support-card {
+    padding: var(--sp-5);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    background: var(--color-accent-soft);
+  }
+  .support-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .support-card__title {
+    font-size: var(--fs-lg);
+  }
+  .support-card__desc {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .support-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+  }
+</style>

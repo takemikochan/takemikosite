@@ -1,0 +1,37 @@
+---
+import Badge from '../ui/Badge.astro';
+import { formatDateJa } from '../../lib/date';
+
+interface Props {
+  category?: { name: string; slug: string; color?: string } | null;
+  publishedAt: string;
+  updatedAt?: string;
+}
+
+const { category, publishedAt, updatedAt } = Astro.props;
+const badgeVariant = (color?: string) =>
+  color === 'primary' || color === 'accent' || color === 'neutral' ? color : 'neutral';
+---
+
+<div class="news-meta">
+  {category && <Badge variant={badgeVariant(category.color)}>{category.name}</Badge>}
+  <time datetime={publishedAt}>{formatDateJa(publishedAt)}</time>
+  {
+    updatedAt && updatedAt !== publishedAt && (
+      <span class="news-meta__updated">（更新: {formatDateJa(updatedAt)}）</span>
+    )
+  }
+</div>
+
+<style>
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+  .news-meta__updated {
+    color: var(--color-text-muted);
+  }
+</style>

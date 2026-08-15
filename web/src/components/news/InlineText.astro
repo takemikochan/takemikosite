@@ -1,0 +1,47 @@
+---
+// Strapi Blocks のインラインノード（text / link）を再帰的に描画する。
+import Mark from './Mark.astro';
+
+export interface InlineNode {
+  type?: 'text' | 'link';
+  text?: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  code?: boolean;
+  url?: string;
+  children?: InlineNode[];
+}
+
+interface Props {
+  nodes: InlineNode[];
+}
+
+const { nodes } = Astro.props;
+const isExternal = (url?: string) => Boolean(url && /^https?:\/\//.test(url));
+---
+
+{
+  nodes.map((node) =>
+    node.type === 'link' ? (
+      <a
+        href={node.url}
+        target={isExternal(node.url) ? '_blank' : undefined}
+        rel={isExternal(node.url) ? 'noopener noreferrer' : undefined}
+      >
+        <Astro.self nodes={node.children ?? []} />
+      </a>
+    ) : (
+      <Mark
+        bold={node.bold}
+        italic={node.italic}
+        underline={node.underline}
+        strikethrough={node.strikethrough}
+        code={node.code}
+      >
+        {node.text}
+      </Mark>
+    )
+  )
+}

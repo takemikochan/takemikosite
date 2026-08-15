@@ -1,0 +1,37 @@
+---
+import { profile } from '../../data/profile';
+---
+
+<dl class="profile-table">
+  {
+    profile.items.map((item) => (
+      <div class="profile-table__row">
+        <dt>{item.label}</dt>
+        <dd>{item.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .profile-table {
+    margin: 0;
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .profile-table__row {
+    display: flex;
+    gap: var(--sp-4);
+    padding-block: var(--sp-2);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .profile-table__row dt {
+    width: 6em;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .profile-table__row dd {
+    margin: 0;
+  }
+</style>

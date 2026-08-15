@@ -1,0 +1,57 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  entries: CollectionEntry<'snsLinks'>[];
+}
+
+const { entries } = Astro.props;
+const sorted = [...entries].sort((a, b) => a.data.order - b.data.order);
+---
+
+{
+  sorted.length > 0 && (
+    <ul class="sns-list">
+      {sorted.map(({ data }) => (
+        <li>
+          <a href={data.url} target="_blank" rel="noopener noreferrer me" class="sns-list__link">
+            <Icon name={data.platform} size={22} />
+            <span class="sns-list__label">
+              {data.label}
+              {data.handle && <span class="sns-list__handle">{data.handle}</span>}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .sns-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+  }
+  .sns-list__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius-sm);
+    border: var(--border-width) solid var(--color-border);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+  }
+  .sns-list__link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .sns-list__handle {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: var(--fs-xs);
+  }
+</style>

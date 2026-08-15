@@ -1,0 +1,66 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import NewsMeta from './NewsMeta.astro';
+import { getExcerpt } from '../../lib/news';
+
+interface Props {
+  entry: CollectionEntry<'news'>;
+}
+
+const { entry } = Astro.props;
+const { title, thumbnail, category, publishedAt } = entry.data;
+const slug = entry.data.slug || entry.id;
+const excerpt = getExcerpt(entry);
+---
+
+<Card href={`/news/${slug}/`}>
+  {
+    thumbnail ? (
+      <img
+        src={thumbnail.url}
+        width={thumbnail.width}
+        height={thumbnail.height}
+        alt={thumbnail.alternativeText ?? ''}
+        loading="lazy"
+        decoding="async"
+        class="news-card__thumb"
+      />
+    ) : (
+      <PlaceholderImage ratio="16/9" />
+    )
+  }
+  <div class="news-card__body">
+    <NewsMeta category={category} publishedAt={publishedAt} />
+    <h3 class="news-card__title">{title}</h3>
+    {excerpt && <p class="news-card__excerpt">{excerpt}</p>}
+  </div>
+</Card>
+
+<style>
+  .news-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .news-card__body {
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .news-card__title {
+    font-size: var(--fs-lg);
+    line-height: var(--lh-tight);
+  }
+  .news-card__excerpt {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

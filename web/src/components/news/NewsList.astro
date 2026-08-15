@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import NewsCard from './NewsCard.astro';
+
+interface Props {
+  entries: CollectionEntry<'news'>[];
+  emptyMessage?: string;
+}
+
+const { entries, emptyMessage = 'まだお知らせはありません。' } = Astro.props;
+---
+
+{
+  entries.length === 0 ? (
+    <p class="news-list__empty">{emptyMessage}</p>
+  ) : (
+    <div class="news-list" data-reveal-group>
+      {entries.map((entry) => (
+        <div data-reveal>
+          <NewsCard entry={entry} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .news-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--sp-5);
+  }
+  .news-list__empty {
+    padding: var(--sp-8) 0;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+</style>

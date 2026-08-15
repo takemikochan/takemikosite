@@ -1,0 +1,104 @@
+---
+// Strapi Rich text (Blocks) の描画。公式レンダラは React 専用のため自作している。
+// 想定外のブロック種別が来ても落ちないよう、未知の type は握りつぶしてログに出す。
+import InlineText from './InlineText.astro';
+import type { InlineNode } from './InlineText.astro';
+import Heading from './Heading.astro';
+
+interface ImageBlockData {
+  url: string;
+  width?: number;
+  height?: number;
+  alternativeText?: string | null;
+}
+
+interface Block {
+  type: string;
+  level?: number;
+  format?: 'ordered' | 'unordered';
+  children?: (InlineNode & { type: string; children?: InlineNode[] })[];
+  image?: ImageBlockData;
+}
+
+interface Props {
+  blocks: Block[];
+}
+
+const { blocks } = Astro.props;
+const KNOWN_TYPES = new Set(['paragraph', 'heading', 'list', 'quote', 'code', 'image']);
+
+for (const block of blocks) {
+  if (!KNOWN_TYPES.has(block.type)) {
+    // eslint-disable-next-line no-console
+    console.warn(`[BlocksRenderer] 未知のブロック種別をスキップしました: ${block.type}`);
+  }
+}
+---
+
+<div class="prose">
+  {
+    blocks.map((block) => {
+      if (block.type === 'paragraph') {
+        return (
+          <p>
+            <InlineText nodes={block.children ?? []} />
+          </p>
+        );
+      }
+
+      if (block.type === 'heading') {
+        return (
+          <Heading level={block.level}>
+            <InlineText nodes={block.children ?? []} />
+          </Heading>
+        );
+      }
+
+      if (block.type === 'list') {
+        const ListTag = block.format === 'ordered' ? 'ol' : 'ul';
+        return (
+          <ListTag>
+            {(block.children ?? []).map((item) => (
+              <li>
+                <InlineText nodes={item.children ?? []} />
+              </li>
+            ))}
+          </ListTag>
+        );
+      }
+
+      if (block.type === 'quote') {
+        return (
+          <blockquote>
+            <InlineText nodes={block.children ?? []} />
+          </blockquote>
+        );
+      }
+
+      if (block.type === 'code') {
+        const text = (block.children ?? []).map((c) => c.text ?? '').join('');
+        return (
+          <pre>
+            <code>{text}</code>
+          </pre>
+        );
+      }
+
+      if (block.type === 'image' && block.image) {
+        return (
+          <img
+            src={block.image.url}
+            width={block.image.width}
+            height={block.image.height}
+            alt={block.image.alternativeText ?? ''}
+            loading="lazy"
+            decoding="async"
+          />
+        );
+      }
+
+      // 未知のブロック種別は握りつぶす（上でログ済み）
+      return null;
+    })
+  }
+</div>

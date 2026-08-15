@@ -1,0 +1,45 @@
+---
+import Card from '../ui/Card.astro';
+import Icon from '../ui/Icon.astro';
+import { profile } from '../../data/profile';
+---
+
+<div class="activity-list" data-reveal-group>
+  {
+    profile.activities.map((activity) => (
+      <div data-reveal>
+        <Card>
+          <div class="activity-list__card">
+            <Icon name={activity.icon} size={28} />
+            <h3 class="activity-list__title">{activity.title}</h3>
+            <p class="activity-list__desc">{activity.desc}</p>
+          </div>
+        </Card>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .activity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-5);
+  }
+  .activity-list__card {
+    padding: var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    color: var(--color-primary);
+  }
+  .activity-list__title {
+    font-size: var(--fs-lg);
+    color: var(--color-text);
+  }
+  .activity-list__desc {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+  }
+</style>

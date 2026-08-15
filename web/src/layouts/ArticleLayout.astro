@@ -1,0 +1,48 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { site } from '../data/site';
+import { resolveOgImage } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description?: string;
+  thumbnail?: string | null;
+  publishedAt: string;
+  updatedAt?: string;
+}
+
+const { title, description, thumbnail, publishedAt, updatedAt } = Astro.props;
+const ogImage = resolveOgImage(thumbnail);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  image: new URL(ogImage, site.url).toString(),
+  datePublished: publishedAt,
+  dateModified: updatedAt ?? publishedAt,
+  author: { '@type': 'Person', name: site.name },
+  publisher: { '@type': 'Person', name: site.name },
+  mainEntityOfPage: Astro.url.toString(),
+};
+// </script> がペイロードに含まれていても script タグを閉じてしまわないようにする
+const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<BaseLayout title={title} description={description} ogImage={ogImage} ogType="article">
+  <script is:inline type="application/ld+json" set:html={jsonLdSafe} />
+  <main class="container article">
+    <slot />
+  </main>
+</BaseLayout>
+
+<style>
+  .article {
+    padding-block: var(--sp-8);
+    max-width: var(--container-narrow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+</style>

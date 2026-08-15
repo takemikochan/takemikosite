@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import WorkCard from './WorkCard.astro';
+
+interface Props {
+  entries: CollectionEntry<'works'>[];
+  emptyMessage?: string;
+}
+
+const { entries, emptyMessage = '制作実績は準備中です。' } = Astro.props;
+
+const sorted = [...entries].sort((a, b) => {
+  if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+  return new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime();
+});
+---
+
+{
+  sorted.length === 0 ? (
+    <p class="work-list__empty">{emptyMessage}</p>
+  ) : (
+    <div class="work-list" data-reveal-group>
+      {sorted.map((entry) => (
+        <div data-reveal>
+          <WorkCard entry={entry} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .work-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sp-5);
+  }
+  .work-list__empty {
+    padding: var(--sp-8) 0;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+</style>

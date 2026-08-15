@@ -1,0 +1,89 @@
+---
+// 他2種（ShopCard/SupportCard）と視覚的に区別できるよう、金の縁取りと NFT バッジを付ける。
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import Badge from '../ui/Badge.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  entry: CollectionEntry<'goodsLinks'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, url, badge, image } = entry.data;
+---
+
+<Card href={url} target="_blank">
+  <div class="nft-card">
+    {
+      image ? (
+        <img
+          src={image.url}
+          width={image.width}
+          height={image.height}
+          alt={image.alternativeText ?? ''}
+          loading="lazy"
+          decoding="async"
+          class="nft-card__image"
+        />
+      ) : (
+        <PlaceholderImage ratio="1/1" />
+      )
+    }
+    <div class="nft-card__body">
+      <div class="nft-card__heading">
+        <Icon name="nft" size={18} />
+        <span class="nft-card__label">NFT</span>
+        {badge && <Badge variant="gold">{badge}</Badge>}
+      </div>
+      <h3 class="nft-card__title">{title}</h3>
+      {description && <p class="nft-card__desc">{description}</p>}
+      <span class="nft-card__link">
+        マーケットプレイスを見る
+        <Icon name="external" size={14} />
+      </span>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .nft-card__image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+  .nft-card__body {
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    border-top: 2px solid var(--p-gold-500);
+  }
+  .nft-card__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--p-gold-500);
+  }
+  .nft-card__label {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .nft-card__title {
+    font-size: var(--fs-lg);
+  }
+  .nft-card__desc {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .nft-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+  }
+</style>

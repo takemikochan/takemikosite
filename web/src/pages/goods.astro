@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import ShopCard from '../components/goods/ShopCard.astro';
+import SupportCard from '../components/goods/SupportCard.astro';
+import NftCard from '../components/goods/NftCard.astro';
+
+const allLinks = await getCollection('goodsLinks');
+const byOrder = (a: (typeof allLinks)[number], b: (typeof allLinks)[number]) =>
+  a.data.order - b.data.order;
+
+const ecLinks = allLinks.filter((e) => e.data.kind === 'ec').sort(byOrder);
+const supportLinks = allLinks.filter((e) => e.data.kind === 'support').sort(byOrder);
+const nftLinks = allLinks.filter((e) => e.data.kind === 'nft').sort(byOrder);
+---
+
+<PageLayout title="グッズ・リンク" description="グッズショップ・支援・NFTマーケットプレイスへのリンク集です。">
+  <section data-reveal>
+    <SectionHeading title="グッズ" />
+    {
+      ecLinks.length === 0 ? (
+        <p class="goods-empty">グッズの準備中です。</p>
+      ) : (
+        <div class="goods-grid" data-reveal-group>
+          {ecLinks.map((entry) => (
+            <div data-reveal>
+              <ShopCard entry={entry} />
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section data-reveal>
+    <SectionHeading title="支援" />
+    {
+      supportLinks.length === 0 ? (
+        <p class="goods-empty">支援リンクの準備中です。</p>
+      ) : (
+        <div class="goods-grid" data-reveal-group>
+          {supportLinks.map((entry) => (
+            <div data-reveal>
+              <SupportCard entry={entry} />
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section data-reveal>
+    <SectionHeading title="NFT" />
+    {
+      nftLinks.length === 0 ? (
+        <p class="goods-empty">NFTマーケットプレイスは準備中です。決まり次第お知らせします。</p>
+      ) : (
+        <div class="goods-grid" data-reveal-group>
+          {nftLinks.map((entry) => (
+            <div data-reveal>
+              <NftCard entry={entry} />
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</PageLayout>
+
+<style>
+  .goods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--sp-5);
+  }
+  .goods-empty {
+    color: var(--color-text-muted);
+    padding-block: var(--sp-4);
+  }
+</style>

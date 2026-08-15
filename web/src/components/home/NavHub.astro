@@ -1,0 +1,57 @@
+---
+import Card from '../ui/Card.astro';
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../ui/Icon.astro';
+
+const hubs: { title: string; desc: string; href: string; icon: IconName }[] = [
+  { title: 'プロフィール', desc: '走海神社の巫女としての設定・活動内容', href: '/profile/', icon: 'illust' },
+  { title: 'お知らせ', desc: '配信予定や制作の近況をお届け', href: '/news/', icon: 'stream' },
+  { title: '制作実績', desc: '生成AIで作ったLPなどの制作物', href: '/works/', icon: 'code' },
+  { title: 'グッズ', desc: 'ショップ・支援・NFTへの導線', href: '/goods/', icon: 'nft' },
+];
+---
+
+<section class="container nav-hub">
+  <div class="nav-hub__grid" data-reveal-group>
+    {
+      hubs.map((hub) => (
+        <div data-reveal>
+          <Card href={hub.href}>
+            <div class="nav-hub__card">
+              <Icon name={hub.icon} size={28} />
+              <h3 class="nav-hub__title">{hub.title}</h3>
+              <p class="nav-hub__desc">{hub.desc}</p>
+            </div>
+          </Card>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .nav-hub {
+    padding-block: var(--sp-8);
+  }
+  .nav-hub__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-5);
+  }
+  .nav-hub__card {
+    padding: var(--sp-6) var(--sp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    color: var(--color-primary);
+  }
+  .nav-hub__title {
+    font-size: var(--fs-lg);
+    color: var(--color-text);
+  }
+  .nav-hub__desc {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+  }
+</style>

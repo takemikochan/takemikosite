@@ -1,0 +1,56 @@
+---
+import { profile } from '../../data/profile';
+---
+
+<div class="profile-card">
+  <img
+    src={profile.avatar}
+    alt=""
+    width="800"
+    height="800"
+    class="profile-card__avatar"
+  />
+  <div class="profile-card__names">
+    <h1 class="profile-card__name">{profile.name}</h1>
+    <p class="profile-card__sub">
+      略称「{profile.shortName.ja}（{profile.shortName.en}）」・呼び方「{profile.nickname}」
+    </p>
+    <p class="profile-card__hashtags">{profile.hashtags.join(' ')}</p>
+  </div>
+</div>
+
+<style>
+  .profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-5);
+    text-align: center;
+  }
+  .profile-card__avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+  .profile-card__name {
+    font-size: var(--fs-3xl);
+  }
+  .profile-card__sub {
+    margin: var(--sp-2) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .profile-card__hashtags {
+    margin: var(--sp-1) 0 0;
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+  }
+
+  @media (min-width: 768px) {
+    .profile-card {
+      flex-direction: row;
+      text-align: left;
+    }
+  }
+</style>

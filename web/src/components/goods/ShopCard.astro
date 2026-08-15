@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import PlaceholderImage from '../ui/PlaceholderImage.astro';
+import Badge from '../ui/Badge.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  entry: CollectionEntry<'goodsLinks'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, url, badge, image } = entry.data;
+---
+
+<Card href={url} target="_blank">
+  <div class="shop-card">
+    {
+      image ? (
+        <img
+          src={image.url}
+          width={image.width}
+          height={image.height}
+          alt={image.alternativeText ?? ''}
+          loading="lazy"
+          decoding="async"
+          class="shop-card__image"
+        />
+      ) : (
+        <PlaceholderImage ratio="1/1" />
+      )
+    }
+    <div class="shop-card__body">
+      <div class="shop-card__heading">
+        <h3 class="shop-card__title">{title}</h3>
+        {badge && <Badge variant="primary">{badge}</Badge>}
+      </div>
+      {description && <p class="shop-card__desc">{description}</p>}
+      <span class="shop-card__link">
+        ショップを見る
+        <Icon name="external" size={14} />
+      </span>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .shop-card__image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+  .shop-card__body {
+    padding: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .shop-card__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-2);
+  }
+  .shop-card__title {
+    font-size: var(--fs-lg);
+  }
+  .shop-card__desc {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+  .shop-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+  }
+</style>

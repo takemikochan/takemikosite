@@ -1,0 +1,14 @@
+---
+// Astro の動的タグ名（<Tag>）は、コンポーネント自身のテンプレート直下でのみ使える制約があるため、
+// 見出しレベルの動的切り替えをこの小さなコンポーネントに閉じ込める。
+interface Props {
+  level?: number;
+}
+
+const headingTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+const { level = 2 } = Astro.props;
+const safeLevel = level >= 1 && level <= 6 ? level : 2;
+const Tag = headingTags[safeLevel - 1];
+---
+
+<Tag><slot /></Tag>

@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import WorkList from '../components/works/WorkList.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+
+const works = await getCollection('works');
+---
+
+<PageLayout title="制作実績" description="生成AIを使ったLP制作など、プログラミング関連の制作実績一覧です。">
+  <SectionHeading title="制作実績" subtitle="生成AIで作ったLPなどのデモをまとめています" />
+  <WorkList entries={works} />
+</PageLayout>

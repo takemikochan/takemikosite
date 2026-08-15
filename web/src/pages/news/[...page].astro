@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import NewsList from '../../components/news/NewsList.astro';
+import Pagination from '../../components/ui/Pagination.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import Badge from '../../components/ui/Badge.astro';
+import { sortPinnedFirst } from '../../lib/news';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allNews = await getCollection('news');
+  const sorted = sortPinnedFirst(allNews);
+  return paginate(sorted, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const categories = await getCollection('categories');
+
+const badgeVariant = (color?: string) =>
+  color === 'primary' || color === 'accent' || color === 'neutral' ? color : 'neutral';
+---
+
+<PageLayout title="お知らせ" description="配信予定・制作の近況などのお知らせ一覧です。">
+  <SectionHeading title="お知らせ" />
+
+  {
+    categories.length > 0 && (
+      <div class="news-categories">
+        {categories.map((c) => (
+          <Badge variant={badgeVariant(c.data.color)}>{c.data.name}</Badge>
+        ))}
+      </div>
+    )
+  }
+
+  <NewsList entries={page.data} />
+
+  <Pagination currentPage={page.currentPage} totalPages={page.lastPage} basePath="/news/" />
+</PageLayout>
+
+<style>
+  .news-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-6);
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+// 告知バー。Phase 5 で Strapi の site-setting（Single Type）と接続する想定のため、
+// 今は text/href を props で受け取るだけの汎用コンポーネントとして用意しておく。
+// 閉じた状態は localStorage に記憶し、同じ告知を二度closeさせない。
+interface Props {
+  text: string;
+  href?: string;
+  id?: string; // 告知が変わるたびに変えると、過去の close 記憶をリセットできる
+}
+
+const { text, href, id = 'default' } = Astro.props;
+const storageKey = `notice-dismissed:${id}`;
+---
+
+<div class="notice-bar" data-notice-bar data-storage-key={storageKey} hidden>
+  <div class="container notice-bar__inner">
+    {
+      href ? (
+        <a href={href} class="notice-bar__link">
+          {text}
+        </a>
+      ) : (
+        <p class="notice-bar__text">{text}</p>
+      )
+    }
+    <button type="button" class="notice-bar__close" data-notice-close aria-label="このお知らせを閉じる">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path
+          d="M6 6l12 12M18 6L6 18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .notice-bar {
+    background: var(--color-primary);
+    color: var(--color-text-invert);
+  }
+  .notice-bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-4);
+    padding-block: var(--sp-2);
+    position: relative;
+  }
+  .notice-bar__text,
+  .notice-bar__link {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: inherit;
+    text-decoration: none;
+  }
+  .notice-bar__link:hover {
+    text-decoration: underline;
+  }
+  .notice-bar__close {
+    position: absolute;
+    right: var(--sp-4);
+    background: none;
+    border: none;
+    color: inherit;
+    padding: var(--sp-1);
+    cursor: pointer;
+    display: inline-flex;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-notice-bar]').forEach((bar) => {
+    const key = bar.dataset.storageKey;
+    if (!key) return;
+    if (localStorage.getItem(key) === '1') return;
+    bar.hidden = false;
+
+    bar.querySelector('[data-notice-close]')?.addEventListener('click', () => {
+      bar.hidden = true;
+      localStorage.setItem(key, '1');
+    });
+  });
+</script>

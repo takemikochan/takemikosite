@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import BlocksRenderer from '../../components/news/BlocksRenderer.astro';
+import NewsMeta from '../../components/news/NewsMeta.astro';
+import { getExcerpt, sortPinnedFirst } from '../../lib/news';
+import { profile } from '../../data/profile';
+import { site } from '../../data/site';
+
+export const getStaticPaths = (async () => {
+  const allNews = await getCollection('news');
+  return allNews.map((entry) => ({
+    params: { slug: entry.data.slug || entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { title, content, category, publishedAt, updatedAt, thumbnail } = entry.data;
+const excerpt = getExcerpt(entry);
+
+const allNews = sortPinnedFirst(await getCollection('news'));
+const currentIndex = allNews.findIndex((e) => e.id === entry.id);
+const prevEntry = currentIndex >= 0 && currentIndex < allNews.length - 1 ? allNews[currentIndex + 1] : null;
+const nextEntry = currentIndex > 0 ? allNews[currentIndex - 1] : null;
+const entrySlug = (e: (typeof allNews)[number]) => e.data.slug || e.id;
+
+const shareUrl = Astro.url.toString();
+const shareText = `${title} ${profile.hashtags.join(' ')}`;
+const shareHref = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'トップ', item: site.url },
+    { '@type': 'ListItem', position: 2, name: 'お知らせ', item: new URL('/news/', site.url).toString() },
+    { '@type': 'ListItem', position: 3, name: title, item: shareUrl },
+  ],
+};
+const breadcrumbLdSafe = JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c');
+---
+
+<ArticleLayout
+  title={title}
+  description={excerpt}
+  thumbnail={thumbnail?.url}
+  publishedAt={publishedAt}
+  updatedAt={updatedAt}
+>
+  <script is:inline type="application/ld+json" set:html={breadcrumbLdSafe} />
+
+  <nav aria-label="パンくず" class="breadcrumb">
+    <a href="/">トップ</a> / <a href="/news/">お知らせ</a> / <span aria-current="page">{title}</span>
+  </nav>
+
+  <header class="article-header">
+    <NewsMeta category={category} publishedAt={publishedAt} updatedAt={updatedAt} />
+    <h1>{title}</h1>
+  </header>
+
+  {
+    thumbnail && (
+      <img
+        src={thumbnail.url}
+        width={thumbnail.width}
+        height={thumbnail.height}
+        alt={thumbnail.alternativeText ?? ''}
+        loading="eager"
+        fetchpriority="high"
+        class="article-thumb"
+      />
+    )
+  }
+
+  <BlocksRenderer blocks={content} />
+
+  <div class="article-share">
+    <a href={shareHref} target="_blank" rel="noopener noreferrer" class="article-share__link">
+      Xでシェア
+    </a>
+    <button type="button" data-copy-url={shareUrl} class="article-share__copy">
+      URLをコピー
+    </button>
+  </div>
+
+  <nav class="article-adjacent">
+    {prevEntry && (
+      <a href={`/news/${entrySlug(prevEntry)}/`} class="article-adjacent__link">
+        ← {prevEntry.data.title}
+      </a>
+    )}
+    {nextEntry && (
+      <a href={`/news/${entrySlug(nextEntry)}/`} class="article-adjacent__link article-adjacent__link--next">
+        {nextEntry.data.title} →
+      </a>
+    )}
+  </nav>
+
+  <a href="/news/" class="article-back">一覧へ戻る</a>
+</ArticleLayout>
+
+<style>
+  .breadcrumb {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb a {
+    color: var(--color-text-muted);
+  }
+
+  .article-header h1 {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-3xl);
+  }
+
+  .article-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .article-share {
+    display: flex;
+    gap: var(--sp-3);
+    padding-block: var(--sp-4);
+    border-block: var(--border-width) solid var(--color-border);
+  }
+  .article-share__link,
+  .article-share__copy {
+    font: inherit;
+    font-size: var(--fs-sm);
+    color: var(--color-accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+  }
+  .article-share__link:hover,
+  .article-share__copy:hover {
+    color: var(--color-primary);
+  }
+
+  .article-adjacent {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    font-size: var(--fs-sm);
+  }
+  .article-adjacent__link {
+    color: var(--color-text);
+    text-decoration: none;
+    max-width: 45%;
+  }
+  .article-adjacent__link--next {
+    text-align: right;
+    margin-left: auto;
+  }
+  .article-adjacent__link:hover {
+    color: var(--color-primary);
+  }
+
+  .article-back {
+    align-self: center;
+    color: var(--color-accent);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+  }
+  .article-back:hover {
+    color: var(--color-primary);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-url]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const url = btn.dataset.copyUrl;
+      if (!url) return;
+      await navigator.clipboard.writeText(url);
+      const original = btn.textContent;
+      btn.textContent = 'コピーしました';
+      setTimeout(() => {
+        btn.textContent = original;
+      }, 2000);
+    });
+  });
+</script>
