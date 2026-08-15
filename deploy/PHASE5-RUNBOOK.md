@@ -54,6 +54,15 @@ GitHub → Settings → Developer settings → Personal access tokens → Fine-g
 
 発行されたトークンは Claude に共有せず、このあとの `git clone` コマンドに直接使ってください。
 
+**`/opt` は root 所有のため、先に sudo ユーザーで deploy 用のディレクトリを作成・所有権を渡します**（deploy ユーザーには sudo を与えていないため、自分ではディレクトリを作れません）:
+
+```bash
+sudo mkdir -p /opt/takemiko-cms-src
+sudo chown deploy:deploy /opt/takemiko-cms-src
+```
+
+続けて deploy ユーザーに切り替えて clone します:
+
 ```bash
 sudo su - deploy
 ```
@@ -73,7 +82,6 @@ exit
 
 ```bash
 sudo ln -s /opt/takemiko-cms-src/cms /opt/takemiko-cms
-sudo chown -R deploy:deploy /opt/takemiko-cms-src
 
 sudo su - deploy
 cd /opt/takemiko-cms
