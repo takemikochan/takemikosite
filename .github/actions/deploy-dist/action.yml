@@ -21,6 +21,8 @@ runs:
         test -f works/index.html
         test -f goods/index.html
         test -f news/index.html
+        test -f contact/index.html
+        test -f privacy/index.html
         test -f sitemap-index.xml
         test "$(find news -mindepth 1 -maxdepth 1 -type d | wc -l)" -ge 1
     - name: Setup SSH

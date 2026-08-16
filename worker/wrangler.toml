@@ -1,0 +1,14 @@
+name = "form"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+
+# ALLOWED_ORIGIN は公開情報（本番ドメイン）のためここに直接書く。
+# TURNSTILE_SECRET / RESEND_API_KEY / CONTACT_NOTIFY_EMAIL は
+# `wrangler secret put` で設定する（このファイルには書かない）。
+[vars]
+ALLOWED_ORIGIN = "https://takemiko.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "takemiko-contact"
+database_id = "REPLACE_WITH_D1_DATABASE_ID" # `wrangler d1 create takemiko-contact` の出力で置き換える

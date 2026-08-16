@@ -1,0 +1,187 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Button from '../components/ui/Button.astro';
+import { site } from '../data/site';
+
+const formReady = Boolean(site.contactEndpoint && site.turnstileSiteKey);
+---
+
+<PageLayout title="お問い合わせ" description={`${site.name}へのお問い合わせフォーム。`}>
+  <section class="contact-page" data-reveal>
+    {
+      formReady ? (
+        <>
+          <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="field">
+              <label for="name">お名前</label>
+              <input type="text" id="name" name="name" required maxlength="100" autocomplete="name" />
+            </div>
+
+            <div class="field">
+              <label for="email">メールアドレス</label>
+              <input type="email" id="email" name="email" required maxlength="200" autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <label for="subject">お問い合わせ種別</label>
+              <select id="subject" name="subject" required>
+                <option value="お仕事のご依頼">お仕事のご依頼</option>
+                <option value="取材・掲載">取材・掲載</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="message">お問い合わせ内容</label>
+              <textarea id="message" name="message" required maxlength="4000" rows="8" />
+            </div>
+
+            {/* ハニーポット：人間には見えない。ボットだけが埋める */}
+            <div class="honeypot" aria-hidden="true">
+              <label for="website">website</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} />
+
+            <p class="status" role="status" aria-live="polite" />
+
+            <Button type="submit" id="contact-submit">送信する</Button>
+          </form>
+        </>
+      ) : (
+        <p class="fallback">
+          現在フォームの準備中です。お手数ですが
+          <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+          までメールでご連絡ください。
+        </p>
+      )
+    }
+
+    <noscript>
+      <p class="fallback">
+        このフォームの送信には JavaScript が必要です。JavaScript
+        を有効にできない場合は、お手数ですが
+        <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+        までメールでご連絡ください。
+      </p>
+    </noscript>
+  </section>
+</PageLayout>
+
+{
+  formReady && (
+    <script is:inline define:vars={{ endpoint: site.contactEndpoint }}>
+      const form = document.getElementById('contact-form');
+      const submitBtn = document.getElementById('contact-submit');
+      const statusEl = form.querySelector('.status');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (submitBtn.disabled) return;
+
+        const formData = new FormData(form);
+        const token = formData.get('cf-turnstile-response');
+        if (!token) {
+          statusEl.textContent = '認証の確認中です。少し待ってからもう一度お試しください。';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        statusEl.textContent = '送信中…';
+
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: formData.get('name'),
+              email: formData.get('email'),
+              subject: formData.get('subject'),
+              message: formData.get('message'),
+              website: formData.get('website'),
+              token,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            statusEl.textContent = '送信しました。ありがとうございます。';
+            form.reset();
+            if (window.turnstile) window.turnstile.reset();
+          } else {
+            throw new Error(data.error || 'unknown_error');
+          }
+        } catch {
+          statusEl.textContent =
+            '送信に失敗しました。時間をおいて再度お試しいただくか、メールでご連絡ください。';
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  )
+}
+
+<style>
+  .contact-page {
+    max-width: var(--container-narrow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .field label {
+    font-weight: 700;
+    font-size: var(--fs-sm);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    font: inherit;
+    padding: var(--sp-3);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* ハニーポット：画面上は見えないが、支援技術からも読み上げられない位置に隠す */
+  .honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .status {
+    margin: 0;
+    min-height: 1.5em;
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .fallback {
+    color: var(--color-text-muted);
+  }
+</style>

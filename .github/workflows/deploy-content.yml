@@ -29,6 +29,8 @@ jobs:
           STRAPI_URL: ${{ secrets.STRAPI_URL }}
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
           PUBLIC_GA_ID: ${{ secrets.PUBLIC_GA_ID }}
+          PUBLIC_CONTACT_ENDPOINT: ${{ secrets.PUBLIC_CONTACT_ENDPOINT }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.PUBLIC_TURNSTILE_SITE_KEY }}
         run: pnpm build
       - uses: ./.github/actions/deploy-dist
         with:

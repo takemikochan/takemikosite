@@ -3,14 +3,25 @@ interface Props {
   href?: string;
   variant?: 'primary' | 'secondary' | 'ghost';
   target?: '_blank';
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  id?: string;
 }
 
-const { href, variant = 'primary', target } = Astro.props;
+const { href, variant = 'primary', target, type, disabled, id } = Astro.props;
 const Tag = href ? 'a' : 'button';
 const rel = target === '_blank' ? 'noopener noreferrer' : undefined;
 ---
 
-<Tag class:list={['btn', `btn--${variant}`]} href={href} target={target} rel={rel}>
+<Tag
+  class:list={['btn', `btn--${variant}`]}
+  href={href}
+  target={target}
+  rel={rel}
+  type={!href ? (type ?? 'button') : undefined}
+  disabled={disabled}
+  id={id}
+>
   <slot />
 </Tag>
 
@@ -56,5 +67,10 @@ const rel = target === '_blank' ? 'noopener noreferrer' : undefined;
   }
   .btn--ghost:hover {
     color: var(--color-primary);
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 </style>

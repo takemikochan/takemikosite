@@ -21,6 +21,8 @@ test -f dist/profile/index.html
 test -f dist/works/index.html
 test -f dist/goods/index.html
 test -f dist/news/index.html
+test -f dist/contact/index.html
+test -f dist/privacy/index.html
 test -f dist/sitemap-index.xml
 
 SHA=$(git rev-parse --short=12 HEAD)
