@@ -11,4 +11,4 @@ ALLOWED_ORIGIN = "https://takemiko.com"
 [[d1_databases]]
 binding = "DB"
 database_name = "takemiko-contact"
-database_id = "REPLACE_WITH_D1_DATABASE_ID" # `wrangler d1 create takemiko-contact` の出力で置き換える
+database_id = "309b7bbf-b307-4f54-b514-57b035559e45"
