@@ -12,3 +12,11 @@ CREATE TABLE IF NOT EXISTS submissions (
   delivery_attempts INTEGER NOT NULL DEFAULT 0,
   last_error TEXT
 );
+
+-- レート制限用。成否に関わらず全POST試行を記録する（§SEC-06）。
+CREATE TABLE IF NOT EXISTS request_attempts (
+  ip TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_request_attempts_ip_created
+  ON request_attempts (ip, created_at);

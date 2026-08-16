@@ -61,17 +61,22 @@ export default {
 
     const ip = req.headers.get('CF-Connecting-IP') ?? '';
 
-    // レート制限：同一IPからの短時間の大量送信を拒否する
+    // レート制限：同一IPからの短時間の大量アクセスを拒否する。
+    // 成否に関わらず全POST試行をカウントする（不正トークンでの連投等、
+    // submissions に保存されないリクエストも防げるようにするため）。
     if (ip) {
       const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
       const { results } = await env.DB.prepare(
-        'SELECT COUNT(*) as count FROM submissions WHERE ip = ? AND created_at > ?',
+        'SELECT COUNT(*) as count FROM request_attempts WHERE ip = ? AND created_at > ?',
       )
         .bind(ip, since)
         .all<{ count: number }>();
       if ((results?.[0]?.count ?? 0) >= RATE_LIMIT_MAX) {
         return json({ ok: false, error: 'rate_limited' }, 429, env.ALLOWED_ORIGIN);
       }
+      await env.DB.prepare('INSERT INTO request_attempts (ip, created_at) VALUES (?, ?)')
+        .bind(ip, new Date().toISOString())
+        .run();
     }
 
     let rawBody: unknown;
@@ -137,6 +142,10 @@ export default {
     // §PRIV-01: 保持期間（RETENTION_DAYS）を過ぎた問い合わせデータを削除する
     const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
     await env.DB.prepare('DELETE FROM submissions WHERE created_at < ?').bind(cutoff).run();
+
+    // §SEC-06: レート制限用の試行ログは1日保持すれば十分なので、それより古い分を消す
+    const attemptsCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    await env.DB.prepare('DELETE FROM request_attempts WHERE created_at < ?').bind(attemptsCutoff).run();
 
     // §REL-01: 通知メール送信が失敗した分を再送する（直近24時間・5回まで）
     const retryWindow = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();

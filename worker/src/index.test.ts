@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS submissions (
   delivery_attempts INTEGER NOT NULL DEFAULT 0,
   last_error TEXT
 );
+CREATE TABLE IF NOT EXISTS request_attempts (
+  ip TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
 `;
 
 beforeAll(async () => {
@@ -120,5 +124,21 @@ describe('contact worker', () => {
       count: number;
     }>();
     expect(after?.count).toBe(before?.count ?? 0);
+  });
+
+  it('rate-limits repeated attempts from the same IP even when every attempt fails validation', async () => {
+    const ip = '203.0.113.99'; // TEST-NET-3、このテスト専用のダミーIP
+    const attempt = () =>
+      run(post({ name: 'a', email: 'a@b.com', subject: 's', message: 'm', token: 'dummy' }, { 'CF-Connecting-IP': ip }));
+
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      const res = await attempt();
+      statuses.push(res.status);
+    }
+
+    // 前半5回はTurnstile未検証などで400、6回目でレート制限の429になる
+    expect(statuses.slice(0, 5).every((s) => s === 400)).toBe(true);
+    expect(statuses[5]).toBe(429);
   });
 });
