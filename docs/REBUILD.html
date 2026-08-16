@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>再構築ガイド — ゼロから同等の本番環境を作る — たけるのみこと Official Site</title>
+<style>
+
+:root {
+  color-scheme: light dark;
+  --bg: #fdf8f6;
+  --surface: #ffffff;
+  --surface-muted: #f7eeea;
+  --border: #eedfd9;
+  --text: #241b1a;
+  --text-muted: #6b5a56;
+  --primary: #c01e2a;
+  --accent: #00708a;
+  --code-bg: #241b1a;
+  --code-text: #f7eeea;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1413;
+    --surface: #241b1a;
+    --surface-muted: #2e2321;
+    --border: #4a3a37;
+    --text: #f2e9e6;
+    --text-muted: #c2b0ac;
+    --primary: #ef7b83;
+    --accent: #6fc7dd;
+    --code-bg: #100c0b;
+    --code-text: #f2e9e6;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, "Noto Sans JP", system-ui, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem;
+}
+.toc {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+.toc-title { margin: 0 0 0.5rem; font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0.15rem 0; }
+.toc .toc-h3 { padding-left: 1rem; opacity: 0.85; }
+.toc a { color: var(--text-muted); text-decoration: none; }
+.toc a:hover { color: var(--primary); text-decoration: underline; }
+.content { min-width: 0; max-width: 860px; }
+h1, h2, h3, h4 { line-height: 1.4; scroll-margin-top: 1.5rem; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+h3 { font-size: 1.1rem; color: var(--accent); }
+p { margin: 0.9em 0; }
+a { color: var(--accent); }
+code {
+  background: var(--surface-muted);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1.2em 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+table thead { display: table-header-group; }
+table tbody { display: table-row-group; }
+th, td { border: 1px solid var(--border); padding: 0.5em 0.75em; text-align: left; vertical-align: top; }
+th { background: var(--surface-muted); }
+blockquote { margin: 1em 0; padding: 0.25em 1em; border-left: 3px solid var(--primary); background: var(--surface-muted); border-radius: 0 6px 6px 0; }
+ul.contains-task-list { list-style: none; padding-left: 0.25em; }
+.task-list-item { display: flex; align-items: flex-start; gap: 0.5em; margin: 0.35em 0; }
+.task-list-item input[type="checkbox"] { margin-top: 0.35em; width: 1.05em; height: 1.05em; }
+hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { position: static; max-height: none; }
+}
+@media print {
+  .toc { display: none; }
+  .layout { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="目次"><p class="toc-title">目次</p><ul><li class="toc-h2"><a href="#0-このドキュメントについて">0. このドキュメントについて</a></li>
+<li class="toc-h3"><a href="#記法規約">記法規約</a></li>
+<li class="toc-h3"><a href="#章の依存関係">章の依存関係</a></li>
+<li class="toc-h2"><a href="#1-全体像とアカウント一覧">1. 全体像とアカウント一覧</a></li>
+<li class="toc-h2"><a href="#2-事前準備">2. 事前準備</a></li>
+<li class="toc-h2"><a href="#3-ローカル開発環境">3. ローカル開発環境</a></li>
+<li class="toc-h3"><a href="#31-前提ツール">3.1 前提ツール</a></li>
+<li class="toc-h3"><a href="#32-リポジトリを取得し各サブプロジェクトの依存を入れる">3.2 リポジトリを取得し、各サブプロジェクトの依存を入れる</a></li>
+<li class="toc-h3"><a href="#33-ローカルpostgresqlクラスタを作る">3.3 ローカルPostgreSQLクラスタを作る</a></li>
+<li class="toc-h3"><a href="#34-環境変数ファイルを作る">3.4 環境変数ファイルを作る</a></li>
+<li class="toc-h3"><a href="#35-起動確認">3.5 起動確認</a></li>
+<li class="toc-h3"><a href="#36-ここで止めてもよい出口">3.6 ここで止めてもよい出口</a></li>
+<li class="toc-h2"><a href="#4-vps初期セットアップ">4. VPS初期セットアップ</a></li>
+<li class="toc-h3"><a href="#41-os更新とタイムゾーン">4.1 OS更新とタイムゾーン</a></li>
+<li class="toc-h3"><a href="#42-sshのハードニング">4.2 SSHのハードニング</a></li>
+<li class="toc-h3"><a href="#43-ファイアウォールufw">4.3 ファイアウォール（ufw）</a></li>
+<li class="toc-h3"><a href="#44-fail2bansshd保護">4.4 fail2ban（sshd保護）</a></li>
+<li class="toc-h2"><a href="#5-デプロイ鍵とdeployユーザー">5. デプロイ鍵とdeployユーザー</a></li>
+<li class="toc-h3"><a href="#51-デプロイ用ssh鍵ペアを生成する-ローカルpowershell">5.1 デプロイ用SSH鍵ペアを生成する `[ローカル/PowerShell]`</a></li>
+<li class="toc-h3"><a href="#52-deployユーザーを作成する-vpsbash-sudoユーザー">5.2 deployユーザーを作成する `[VPS/bash: sudoユーザー]`</a></li>
+<li class="toc-h2"><a href="#6-dns">6. DNS</a></li>
+<li class="toc-h2"><a href="#7-tls証明書">7. TLS証明書</a></li>
+<li class="toc-h3"><a href="#71-nginxとcertbotのインストール">7.1 nginxとcertbotのインストール</a></li>
+<li class="toc-h3"><a href="#72-webroot認証用のディレクトリを作る">7.2 webroot認証用のディレクトリを作る</a></li>
+<li class="toc-h3"><a href="#73-最小構成のnginxを一時的に配置して証明書を取得する">7.3 最小構成のnginxを一時的に配置して証明書を取得する</a></li>
+<li class="toc-h3"><a href="#74-証明書を取得する">7.4 証明書を取得する</a></li>
+<li class="toc-h3"><a href="#75-一時設定を撤去する">7.5 一時設定を撤去する</a></li>
+<li class="toc-h2"><a href="#8-nginx配置">8. nginx配置</a></li>
+<li class="toc-h3"><a href="#81-証明書の自動更新を検証する">8.1 証明書の自動更新を検証する</a></li>
+<li class="toc-h2"><a href="#9-静的サイトの初回デプロイ">9. 静的サイトの初回デプロイ</a></li>
+<li class="toc-h3"><a href="#91-github-secretsを登録する-ブラウザ">9.1 GitHub Secretsを登録する `[ブラウザ]`</a></li>
+<li class="toc-h3"><a href="#92-github-cliを認証する-ローカルpowershell">9.2 GitHub CLIを認証する `[ローカル/PowerShell]`</a></li>
+<li class="toc-h3"><a href="#93-初回デプロイ">9.3 初回デプロイ</a></li>
+<li class="toc-h3"><a href="#94-動作確認-ローカルpowershell">9.4 動作確認 `[ローカル/PowerShell]`</a></li>
+<li class="toc-h2"><a href="#10-strapi本番構築">10. Strapi本番構築</a></li>
+<li class="toc-h3"><a href="#101-nodepostgresqlのインストール">10.1 Node・PostgreSQLのインストール</a></li>
+<li class="toc-h3"><a href="#102-データベースとロールを作成する">10.2 データベースとロールを作成する</a></li>
+<li class="toc-h3"><a href="#103-cmsコードを取得する">10.3 CMSコードを取得する</a></li>
+<li class="toc-h3"><a href="#104-etctakemiko-cmsenv-を作成する">10.4 `/etc/takemiko-cms.env` を作成する</a></li>
+<li class="toc-h3"><a href="#105-systemdサービスを配置する">10.5 systemdサービスを配置する</a></li>
+<li class="toc-h3"><a href="#106-cmstakemikocom-は-8-で配置済み">10.6 cms.takemiko.com は §8 で配置済み</a></li>
+<li class="toc-h3"><a href="#107-管理画面の初回セットアップ-ブラウザ">10.7 管理画面の初回セットアップ `[ブラウザ]`</a></li>
+<li class="toc-h3"><a href="#108-コンテンツを投入する">10.8 コンテンツを投入する</a></li>
+<li class="toc-h3"><a href="#109-本番apiトークンとgithub-secrets-ブラウザ-ローカルpowershell">10.9 本番APIトークンとGitHub Secrets `[ブラウザ]` `[ローカル/PowerShell]`</a></li>
+<li class="toc-h3"><a href="#1010-fail2banstrapi管理画面用jail">10.10 fail2ban（Strapi管理画面用jail）</a></li>
+<li class="toc-h3"><a href="#1011-経路bの動作確認">10.11 経路Bの動作確認</a></li>
+<li class="toc-h2"><a href="#11-バックアップ">11. バックアップ</a></li>
+<li class="toc-h2"><a href="#12-cloudflare-workerお問い合わせフォーム">12. Cloudflare Worker（お問い合わせフォーム）</a></li>
+<li class="toc-h3"><a href="#121-wrangler-にログイン">12.1 wrangler にログイン</a></li>
+<li class="toc-h3"><a href="#122-d1データベースを作成する">12.2 D1データベースを作成する</a></li>
+<li class="toc-h3"><a href="#123-スキーマを適用する">12.3 スキーマを適用する</a></li>
+<li class="toc-h3"><a href="#124-turnstileサイトを登録する-ブラウザ">12.4 Turnstileサイトを登録する `[ブラウザ]`</a></li>
+<li class="toc-h3"><a href="#125-resendに登録する-ブラウザ">12.5 Resendに登録する `[ブラウザ]`</a></li>
+<li class="toc-h3"><a href="#126-workerにシークレットを登録する">12.6 Workerにシークレットを登録する</a></li>
+<li class="toc-h3"><a href="#127-デプロイする">12.7 デプロイする</a></li>
+<li class="toc-h3"><a href="#128-worker-urlを3箇所に反映する">12.8 Worker URLを3箇所に反映する</a></li>
+<li class="toc-h3"><a href="#129-動作確認">12.9 動作確認</a></li>
+<li class="toc-h2"><a href="#13-受け入れ検証">13. 受け入れ検証</a></li>
+<li class="toc-h2"><a href="#14-別ドメイン別アカウントで建てる場合">14. 別ドメイン・別アカウントで建てる場合</a></li>
+<li class="toc-h2"><a href="#15-トラブルシューティング">15. トラブルシューティング</a></li>
+<li class="toc-h2"><a href="#付録-全チェックリストコピー用">付録: 全チェックリスト（コピー用）</a></li></ul></nav>
+<main class="content">
+<h1 id="再構築ガイド-ゼロから同等の本番環境を作る" tabindex="-1">再構築ガイド — ゼロから同等の本番環境を作る</h1>
+<h2 id="0-このドキュメントについて" tabindex="-1">0. このドキュメントについて</h2>
+<p><strong>目的</strong>: 新しいVPS・新しいCloudflareアカウント・まっさらな開発機から出発し、このリポジトリの <code>main</code> ブランチだけを元に、既存の本番環境と同等の（かつ最初からセキュリティ対策済みの）環境を再構築する。ディザスタリカバリ、あるいは環境の作り直しに使う。</p>
+<p><strong>日々の運用</strong>（記事の公開、コード変更のデプロイ、設定ファイルの再反映、バックアップ・復元、シークレットのローテーション等）は扱わない。そちらは <a href="./OPERATIONS.html"><code>OPERATIONS.md</code></a> を参照。シークレットや環境変数の値の意味は <a href="./REFERENCE.html"><code>REFERENCE.md</code></a> に一本化されている。</p>
+<p><strong>想定所要時間</strong>: 半日程度（DNS伝播待ち・証明書発行待ちを含む）。</p>
+<h3 id="記法規約" tabindex="-1">記法規約</h3>
+<ul>
+<li><code>[ローカル/PowerShell]</code> — あなたの開発機のPowerShellで実行</li>
+<li><code>[VPS/bash: sudoユーザー]</code> — VPSにSSHログインした、sudo権限を持つ既存アカウントで実行</li>
+<li><code>[VPS/bash: deploy]</code> — VPS上の <code>deploy</code> ユーザー（sudoなし）で実行</li>
+<li><code>[ブラウザ]</code> — Webブラウザでの操作</li>
+<li>プレースホルダ（<code>&lt;VPS_HOST&gt;</code> 等）は <a href="./REFERENCE.html#1-%E3%83%97%E3%83%AC%E3%83%BC%E3%82%B9%E3%83%9B%E3%83%AB%E3%83%80%E8%A6%8F%E7%B4%84"><code>REFERENCE.md</code> §1</a> 参照</li>
+<li><strong>秘密情報が関わる手順はすべて、あなた自身のターミナル・ブラウザで実行してください。</strong> AIエージェントに秘密鍵・パスワード・トークンの中身を見せる必要はありません（生成コマンドの実行そのものも含む）</li>
+</ul>
+<h3 id="章の依存関係" tabindex="-1">章の依存関係</h3>
+<pre><code>§2 事前準備
+ └─ §3 ローカル開発環境 ──────────────(ここで止めてもよい: ローカルで見るだけなら以降不要)
+     └─ §4 VPS初期セットアップ
+         └─ §5 デプロイ鍵とdeployユーザー
+             └─ §6 DNS
+                 └─ §7 TLS証明書
+                     └─ §8 nginx配置
+                         └─ §9 静的サイト初回デプロイ ──(ここまでで https://&lt;DOMAIN&gt;/ が見える)
+                             └─ §10 Strapi本番構築
+                                 └─ §11 バックアップ
+                                     └─ §12 Cloudflare Worker
+                                         └─ §13 受け入れ検証
+</code></pre>
+<hr>
+<h2 id="1-全体像とアカウント一覧" tabindex="-1">1. 全体像とアカウント一覧</h2>
+<p>完成形の構成:</p>
+<pre><code>[ 訪問者のブラウザ ]
+       │
+       ├─ https://&lt;DOMAIN&gt;/          → nginx → /var/www/takemiko/current (Astro静的ファイル)
+       ├─ https://cms.&lt;DOMAIN&gt;/admin → nginx → 127.0.0.1:1337 (Strapi)
+       └─ フォーム送信              → Cloudflare Worker → D1 / Turnstile / Resend
+
+[ GitHub Actions ]
+       ├─ 経路A(コード変更): dist.tar.gz を rsync でVPSへ
+       └─ 経路B(記事更新): Strapiのlifecycle → repository_dispatch → ビルド → rsync
+</code></pre>
+<p>必要なアカウント: GitHub（リポジトリ・Actions・Secrets）、VPS事業者（Ubuntu 26.04系、最低2vCPU/4GB目安）、ドメインレジストラ、Cloudflare（Workers/D1/Turnstile、無料枠で足りる）、Resend（メール通知、無料枠で足りる）、Google Analytics（任意）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 上記すべてのアカウントを用意した</label></li>
+</ul>
+<hr>
+<h2 id="2-事前準備" tabindex="-1">2. 事前準備</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> ドメインを取得し、レジストラの管理画面にアクセスできる</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> VPSを契約し、sudo権限を持つ非rootアカウントでSSHログインできる（rootログイン不可の構成を推奨）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> GitHubにこのリポジトリをforkまたはpush済みで、Actionsが有効</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> Cloudflareアカウントを作成し、<code>*.workers.dev</code> サブドメインを1つ確保している</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> Resendアカウントを作成できる状態（登録は §12 で行う）</label></li>
+</ul>
+<hr>
+<h2 id="3-ローカル開発環境" tabindex="-1">3. ローカル開発環境</h2>
+<p><code>[ローカル/PowerShell]</code></p>
+<h3 id="31-前提ツール" tabindex="-1">3.1 前提ツール</h3>
+<ul>
+<li>Git</li>
+<li>Node.js 24系（リポジトリの <code>.nvmrc</code> に合わせる）</li>
+<li>pnpm（<code>npm install -g pnpm</code>。<code>corepack enable</code> は管理者権限が必要になる場合があるため、権限エラーが出たらこちらを使う）</li>
+<li>GitHub CLI（<code>gh</code>）— <a href="https://cli.github.com/">cli.github.com</a> または <code>winget install --id GitHub.cli</code></li>
+<li>Cloudflare Wrangler CLI — <code>worker/</code> の <code>npm install</code> で入る（別途インストール不要）</li>
+<li>PostgreSQL 18（ローカル開発用）</li>
+</ul>
+<h3 id="32-リポジトリを取得し各サブプロジェクトの依存を入れる" tabindex="-1">3.2 リポジトリを取得し、各サブプロジェクトの依存を入れる</h3>
+<pre><code class="language-powershell">git clone https://github.com/&lt;GITHUB_OWNER&gt;/takemikosite.git
+cd takemikosite
+
+cd web
+pnpm install
+cd ..\cms
+npm install
+cd ..\worker
+npm install
+cd ..
+</code></pre>
+<p>3つのサブプロジェクトは独立したパッケージマネージャを使う（pnpm workspaceとして連結していない）。</p>
+<h3 id="33-ローカルpostgresqlクラスタを作る" tabindex="-1">3.3 ローカルPostgreSQLクラスタを作る</h3>
+<p>Windowsのグローバルサービスとは別に、プロジェクト専用のクラスタを <code>cms/.pgdata/</code> に作る（venvのようにデータを分離する）。ポートは <strong>5433</strong>。</p>
+<pre><code class="language-powershell">&amp; &quot;C:\Program Files\PostgreSQL\18\bin\initdb.exe&quot; -D &quot;D:\Projects\takemikosite\cms\.pgdata&quot; -U postgres -E UTF8
+</code></pre>
+<p><code>cms/.pgdata/postgresql.conf</code> の末尾に <code>port = 5433</code> を追記する。</p>
+<p>起動・停止:</p>
+<pre><code class="language-powershell">&amp; &quot;C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe&quot; -D &quot;D:\Projects\takemikosite\cms\.pgdata&quot; -l &quot;D:\Projects\takemikosite\cms\.pgdata\server.log&quot; start
+&amp; &quot;C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe&quot; -D &quot;D:\Projects\takemikosite\cms\.pgdata&quot; stop
+</code></pre>
+<p>起動後、DBを作成:</p>
+<pre><code class="language-powershell">&amp; &quot;C:\Program Files\PostgreSQL\18\bin\createdb.exe&quot; -U postgres -p 5433 takemiko_cms
+</code></pre>
+<h3 id="34-環境変数ファイルを作る" tabindex="-1">3.4 環境変数ファイルを作る</h3>
+<p>各 <code>.env.example</code> をコピーして値を埋める（<a href="./REFERENCE.html#4-%E8%A1%A8c-%E3%83%AD%E3%83%BC%E3%82%AB%E3%83%AB%E7%92%B0%E5%A2%83-vs-%E6%9C%AC%E7%95%AA%E7%92%B0%E5%A2%83%E3%81%AE%E5%AF%BE%E5%BF%9C"><code>REFERENCE.md</code> §4</a> 参照）。</p>
+<pre><code class="language-powershell">Copy-Item web\.env.example web\.env
+Copy-Item cms\.env.example cms\.env
+Copy-Item worker\.dev.vars.example worker\.dev.vars
+</code></pre>
+<ul>
+<li><code>web/.env</code>: Strapiに接続しない場合は空のままでよい（モックデータで動く）</li>
+<li><code>cms/.env</code>: <code>DATABASE_PORT=5433</code>、<code>DATABASE_NAME=takemiko_cms</code>、<code>DATABASE_USERNAME=postgres</code>。シークレット系（<code>APP_KEYS</code>等）はローカル開発用に適当な値で構わない（<code>openssl rand -base64 32</code> 等）</li>
+<li><code>worker/.dev.vars</code>: ローカルでフォームの動作確認をしない限り空のままでよい</li>
+</ul>
+<h3 id="35-起動確認" tabindex="-1">3.5 起動確認</h3>
+<pre><code class="language-powershell">cd web
+pnpm astro check
+pnpm build
+pnpm test
+pnpm dev          # http://localhost:4321 でモックデータのサイトが見える
+
+cd ..\cms
+npm run develop   # http://localhost:1337/admin で初回管理者作成画面が見える
+
+cd ..\worker
+npm run typecheck
+npm test
+</code></pre>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>pnpm build</code> が成功する</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>pnpm test</code> / <code>npm test</code>（worker）が全件成功する</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>pnpm dev</code> でトップページが表示される</label></li>
+</ul>
+<h3 id="36-ここで止めてもよい出口" tabindex="-1">3.6 ここで止めてもよい出口</h3>
+<p>ローカルで見るだけ・コードを読むだけであれば、ここで作業を終えてよい。本番環境（VPS・Cloudflare）を構築する場合のみ §4 以降に進む。</p>
+<hr>
+<h2 id="4-vps初期セットアップ" tabindex="-1">4. VPS初期セットアップ</h2>
+<p><code>[VPS/bash: sudoユーザー]</code></p>
+<h3 id="41-os更新とタイムゾーン" tabindex="-1">4.1 OS更新とタイムゾーン</h3>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo timedatectl set-timezone Asia/Tokyo
+</code></pre>
+<h3 id="42-sshのハードニング" tabindex="-1">4.2 SSHのハードニング</h3>
+<p><code>/etc/ssh/sshd_config</code> を編集し、以下を確認・設定する:</p>
+<pre><code>PermitRootLogin no
+PasswordAuthentication no
+</code></pre>
+<p>（多くのVPS事業者はデフォルトで root ログイン不可・鍵認証必須の構成を提供している。既にそうなっていれば変更不要）</p>
+<pre><code class="language-bash">sudo systemctl restart sshd
+</code></pre>
+<h3 id="43-ファイアウォールufw" tabindex="-1">4.3 ファイアウォール（ufw）</h3>
+<p><strong>順序が重要</strong>: 先にSSHを許可してから有効化する。逆順だと自分がロックアウトされる。</p>
+<pre><code class="language-bash">sudo ufw allow OpenSSH
+sudo ufw enable
+sudo ufw allow 80,443/tcp
+sudo ufw status
+</code></pre>
+<p><strong>⚠️ クラウド事業者側のパケットフィルタ/セキュリティグループも別途開放すること</strong>（ufwだけでは不十分。事業者の管理コンソールで80・443・22を許可）。</p>
+<p>判断基準: <code>curl -I http://&lt;DOMAIN&gt;</code> を打って、即座に「Connection refused」が返るなら開放は成功（この時点ではまだnginxが無いので拒否されるのが正常）。何十秒もタイムアウトする場合はファイアウォールが塞いでいる。</p>
+<h3 id="44-fail2bansshd保護" tabindex="-1">4.4 fail2ban（sshd保護）</h3>
+<pre><code class="language-bash">sudo apt install -y fail2ban
+sudo systemctl enable --now fail2ban
+sudo fail2ban-client status sshd
+</code></pre>
+<p>デフォルトの <code>sshd</code> jailで十分。Strapi管理画面用のjailは §10.9 で追加する。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>ufw status</code> が <code>Status: active</code> かつ 22/80/443 が許可されている</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> クラウド事業者側のフィルタも80/443/22を許可した</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>fail2ban-client status sshd</code> が有効になっている</label></li>
+</ul>
+<hr>
+<h2 id="5-デプロイ鍵とdeployユーザー" tabindex="-1">5. デプロイ鍵とdeployユーザー</h2>
+<h3 id="51-デプロイ用ssh鍵ペアを生成する-ローカルpowershell" tabindex="-1">5.1 デプロイ用SSH鍵ペアを生成する <code>[ローカル/PowerShell]</code></h3>
+<pre><code class="language-powershell">ssh-keygen -t ed25519 -C &quot;github@takemiko&quot; -f &lt;SSH_KEY_PATH&gt;
+</code></pre>
+<p>2回のパスフレーズ入力プロンプトは<strong>両方とも空Enter</strong>（GitHub Actionsが無人実行するため）。普段使いの鍵とは別にする。</p>
+<h3 id="52-deployユーザーを作成する-vpsbash-sudoユーザー" tabindex="-1">5.2 deployユーザーを作成する <code>[VPS/bash: sudoユーザー]</code></h3>
+<pre><code class="language-bash">sudo adduser --disabled-password --gecos &quot;&quot; deploy
+sudo mkdir -p /var/www/takemiko/releases
+sudo chown -R deploy:deploy /var/www/takemiko
+sudo mkdir -p /home/deploy/.ssh
+sudo chmod 700 /home/deploy/.ssh
+</code></pre>
+<p><strong>deployユーザーにはsudoを一切与えない。</strong></p>
+<p><code>[ローカル/PowerShell]</code> で公開鍵の中身を表示:</p>
+<pre><code class="language-powershell">Get-Content &lt;SSH_KEY_PATH&gt;.pub
+</code></pre>
+<p><code>[VPS/bash: sudoユーザー]</code> で貼り付け:</p>
+<pre><code class="language-bash">sudo nano /home/deploy/.ssh/authorized_keys
+# 上でコピーした1行を貼り付けて保存
+sudo chmod 600 /home/deploy/.ssh/authorized_keys
+sudo chown -R deploy:deploy /home/deploy/.ssh
+</code></pre>
+<p>動作確認 <code>[ローカル/PowerShell]</code>:</p>
+<pre><code class="language-powershell">ssh -i &lt;SSH_KEY_PATH&gt; -p 22 deploy@&lt;VPS_HOST&gt;
+</code></pre>
+<p>ログインできたら <code>exit</code>。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>deploy</code> ユーザーでSSHログインできる</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>deploy</code> に <code>sudo -l</code> を試すと権限がないことを確認した（任意）</label></li>
+</ul>
+<hr>
+<h2 id="6-dns" tabindex="-1">6. DNS</h2>
+<p>レジストラの管理画面で、以下のA/AAAAレコードを <code>&lt;VPS_HOST&gt;</code> に向ける:</p>
+<ul>
+<li><code>&lt;DOMAIN&gt;</code></li>
+<li><code>www.&lt;DOMAIN&gt;</code></li>
+<li><code>cms.&lt;DOMAIN&gt;</code>（証明書をまとめて取るため今の段階で設定しておく）</li>
+</ul>
+<p>伝播確認（数分〜数時間かかる場合がある）:</p>
+<pre><code class="language-powershell">nslookup &lt;DOMAIN&gt;
+nslookup cms.&lt;DOMAIN&gt;
+</code></pre>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 3つのレコードすべてが <code>&lt;VPS_HOST&gt;</code> を返す</label></li>
+</ul>
+<hr>
+<h2 id="7-tls証明書" tabindex="-1">7. TLS証明書</h2>
+<p><code>[VPS/bash: sudoユーザー]</code></p>
+<h3 id="71-nginxとcertbotのインストール" tabindex="-1">7.1 nginxとcertbotのインストール</h3>
+<pre><code class="language-bash">sudo apt install -y nginx certbot python3-certbot-nginx
+</code></pre>
+<h3 id="72-webroot認証用のディレクトリを作る" tabindex="-1">7.2 webroot認証用のディレクトリを作る</h3>
+<p>証明書の取得・更新の両方をwebroot方式で行う（<code>--standalone</code> は使わない。取得時はport 80が空いていても、<strong>更新時はnginxが常にport 80を使っているため <code>--standalone</code> は失敗する</strong>）。</p>
+<pre><code class="language-bash">sudo mkdir -p /var/www/letsencrypt
+</code></pre>
+<h3 id="73-最小構成のnginxを一時的に配置して証明書を取得する" tabindex="-1">7.3 最小構成のnginxを一時的に配置して証明書を取得する</h3>
+<p><code>deploy/nginx/</code> の各設定ファイルは、証明書のパス（<code>/etc/letsencrypt/live/takemiko.com/</code>）を前提に書かれているため、<strong>証明書が無い状態ではロードできない</strong>。先に <code>/.well-known/acme-challenge/</code> だけを処理する最小構成を一時的に置く。</p>
+<pre><code class="language-bash">sudo tee /etc/nginx/sites-available/_acme-temp.conf &gt; /dev/null &lt;&lt;'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        default_type &quot;text/plain&quot;;
+    }
+    location / { return 404; }
+}
+EOF
+sudo ln -s /etc/nginx/sites-available/_acme-temp.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t &amp;&amp; sudo systemctl restart nginx
+</code></pre>
+<h3 id="74-証明書を取得する" tabindex="-1">7.4 証明書を取得する</h3>
+<pre><code class="language-bash">sudo certbot certonly --webroot -w /var/www/letsencrypt \
+  -d &lt;DOMAIN&gt; -d www.&lt;DOMAIN&gt; -d cms.&lt;DOMAIN&gt;
+</code></pre>
+<p>初回はメールアドレス・利用規約への同意を対話式で聞かれる。成功すると <code>/etc/letsencrypt/live/&lt;DOMAIN&gt;/fullchain.pem</code> 等が作られる。</p>
+<h3 id="75-一時設定を撤去する" tabindex="-1">7.5 一時設定を撤去する</h3>
+<pre><code class="language-bash">sudo rm /etc/nginx/sites-enabled/_acme-temp.conf /etc/nginx/sites-available/_acme-temp.conf
+</code></pre>
+<p>（§8で本来の設定に置き換える。ここで一旦 <code>nginx -t</code> は失敗する状態になるが、§8で正しい設定を置くまでの一時的な状態なので問題ない）</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/etc/letsencrypt/live/&lt;DOMAIN&gt;/fullchain.pem</code> が存在する</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>sudo certbot certificates</code> で3ドメイン分のSANが確認できる</label></li>
+</ul>
+<hr>
+<h2 id="8-nginx配置" tabindex="-1">8. nginx配置</h2>
+<p><code>[ローカル/PowerShell]</code> → <code>[VPS/bash: sudoユーザー]</code></p>
+<p><strong>順序が重要</strong>: security-headers.conf（共通スニペット）→ 各vhost、の順に配置する。逆にすると <code>include</code> 先が無く <code>nginx -t</code> が失敗する。</p>
+<pre><code class="language-powershell">scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\nginx\security-headers.conf deploy@&lt;VPS_HOST&gt;:/tmp/security-headers.conf
+scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\nginx\takemiko.com.conf deploy@&lt;VPS_HOST&gt;:/tmp/takemiko.com.conf
+scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\nginx\cms.takemiko.com.conf deploy@&lt;VPS_HOST&gt;:/tmp/cms.takemiko.com.conf
+</code></pre>
+<pre><code class="language-bash">sudo mkdir -p /etc/nginx/snippets
+sudo mv /tmp/security-headers.conf /etc/nginx/snippets/security-headers.conf
+sudo mv /tmp/takemiko.com.conf /etc/nginx/sites-available/takemiko.com.conf
+sudo mv /tmp/cms.takemiko.com.conf /etc/nginx/sites-available/cms.takemiko.com.conf
+sudo ln -s /etc/nginx/sites-available/takemiko.com.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/cms.takemiko.com.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+</code></pre>
+<p><code>nginx -t</code> がエラーを出す場合は、<code>security-headers.conf</code> が <code>/etc/nginx/snippets/</code> に存在するか、証明書のパスが実在するかを確認する。</p>
+<h3 id="81-証明書の自動更新を検証する" tabindex="-1">8.1 証明書の自動更新を検証する</h3>
+<pre><code class="language-bash">sudo certbot renew --dry-run
+</code></pre>
+<p>エラーなく完了すること。<code>certbot.timer</code> がすでに有効になっているはず:</p>
+<pre><code class="language-bash">sudo systemctl status certbot.timer
+</code></pre>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>nginx -t</code> が通る</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>sudo certbot renew --dry-run</code> が成功する</label></li>
+</ul>
+<hr>
+<h2 id="9-静的サイトの初回デプロイ" tabindex="-1">9. 静的サイトの初回デプロイ</h2>
+<h3 id="91-github-secretsを登録する-ブラウザ" tabindex="-1">9.1 GitHub Secretsを登録する <code>[ブラウザ]</code></h3>
+<p>GitHubリポジトリ → Settings → Secrets and variables → Actions で、<a href="./REFERENCE.html#2-%E8%A1%A8a-github-secrets%E5%85%A811%E4%BB%B6"><code>REFERENCE.md</code> 表A</a> の①〜⑥を登録する（⑦〜⑪はStrapi構築後の §10.8 で追加する）。</p>
+<p><code>SSH_KNOWN_HOSTS</code> の値は <code>[ローカル/PowerShell]</code> で取得する:</p>
+<pre><code class="language-powershell">ssh-keyscan -p 22 &lt;VPS_HOST&gt; &gt; known_hosts.txt
+Get-Content known_hosts.txt
+</code></pre>
+<p>（秘密情報ではない。中身をコピーしたら <code>Remove-Item known_hosts.txt</code> で削除してよい）</p>
+<h3 id="92-github-cliを認証する-ローカルpowershell" tabindex="-1">9.2 GitHub CLIを認証する <code>[ローカル/PowerShell]</code></h3>
+<pre><code class="language-powershell">gh auth login
+</code></pre>
+<p>ブラウザでのOAuth認証を選ぶ。</p>
+<h3 id="93-初回デプロイ" tabindex="-1">9.3 初回デプロイ</h3>
+<pre><code class="language-powershell">cd web
+pnpm release
+</code></pre>
+<p><code>web/scripts/release.sh</code> の3つのガード（作業ツリーが汚れていない・<code>origin/main</code>と一致・ビルド成果物のサニティチェック）を通過すると、GitHub Releaseが作られ、Actionsが自動でVPSへrsyncする。GitHubリポジトリのActionsタブで進捗を確認できる。</p>
+<h3 id="94-動作確認-ローカルpowershell" tabindex="-1">9.4 動作確認 <code>[ローカル/PowerShell]</code></h3>
+<pre><code class="language-powershell">curl.exe -sI https://&lt;DOMAIN&gt;/
+</code></pre>
+<p><code>200</code> かつ <code>Cache-Control: public, max-age=0, must-revalidate</code> を確認。</p>
+<p>ハッシュ付き静的アセットのキャッシュ確認（実際のファイル名は <code>dist/_astro/</code> を見て拾う。例: <code>pnpm build</code> 後の <code>web/dist/_astro/*.css</code>）:</p>
+<pre><code class="language-powershell">curl.exe -sI https://&lt;DOMAIN&gt;/_astro/&lt;実際のファイル名&gt;
+</code></pre>
+<p><code>Cache-Control: public, max-age=31536000, immutable</code> を確認。</p>
+<pre><code class="language-powershell">curl.exe -sI https://&lt;DOMAIN&gt;/no-such-page/
+</code></pre>
+<p><code>404</code> を確認。</p>
+<p>セキュリティヘッダーの確認:</p>
+<pre><code class="language-powershell">curl.exe -sI https://&lt;DOMAIN&gt;/ | Select-String &quot;x-content-type|x-frame|referrer-policy|strict-transport|content-security-policy&quot;
+</code></pre>
+<p>5行前後表示されることを確認。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> トップページが200で表示される</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/_astro/</code> のハッシュ付きファイルが <code>immutable</code> キャッシュを返す</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 存在しないパスが404を返す</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> セキュリティヘッダーが返る</label></li>
+</ul>
+<hr>
+<h2 id="10-strapi本番構築" tabindex="-1">10. Strapi本番構築</h2>
+<p><code>[VPS/bash: sudoユーザー]</code> を基本に、<code>[VPS/bash: deploy]</code> を挟む。</p>
+<h3 id="101-nodepostgresqlのインストール" tabindex="-1">10.1 Node・PostgreSQLのインストール</h3>
+<pre><code class="language-bash">sudo apt install -y nodejs npm postgresql
+node -v   # v20〜v26系であることを確認（.nvmrcのローカル24系と完全一致しなくてよい。REFERENCE §4参照）
+</code></pre>
+<h3 id="102-データベースとロールを作成する" tabindex="-1">10.2 データベースとロールを作成する</h3>
+<pre><code class="language-bash">openssl rand -base64 24
+</code></pre>
+<p>（出力はあなたしか見ません。控えておく）</p>
+<pre><code class="language-bash">sudo -u postgres psql
+</code></pre>
+<pre><code class="language-sql">CREATE DATABASE takemiko_cms;
+CREATE USER strapi WITH ENCRYPTED PASSWORD '上で生成したパスワード';
+GRANT ALL PRIVILEGES ON DATABASE takemiko_cms TO strapi;
+ALTER DATABASE takemiko_cms OWNER TO strapi;
+\q
+</code></pre>
+<p>（任意）<code>/etc/postgresql/18/main/postgresql.conf</code> の <code>shared_buffers</code> を <code>512MB</code> に変更 → <code>sudo systemctl restart postgresql</code>。</p>
+<h3 id="103-cmsコードを取得する" tabindex="-1">10.3 CMSコードを取得する</h3>
+<p>GitHubで <strong>Fine-grained PAT</strong>（対象リポジトリのみ、<strong>Contents: Read-only</strong>）を発行する <code>[ブラウザ]</code>。</p>
+<pre><code class="language-bash">sudo mkdir -p /opt/takemiko-cms-src
+sudo chown deploy:deploy /opt/takemiko-cms-src
+</code></pre>
+<p><code>[VPS/bash: deploy]</code>:</p>
+<pre><code class="language-bash">sudo su - deploy
+git clone --no-checkout --filter=blob:none \
+  https://&lt;GitHubユーザー名&gt;:&lt;上で発行したPAT&gt;@github.com/&lt;GITHUB_OWNER&gt;/takemikosite.git /opt/takemiko-cms-src
+cd /opt/takemiko-cms-src
+git sparse-checkout set cms
+git checkout main
+exit
+</code></pre>
+<p><code>[VPS/bash: sudoユーザー]</code>:</p>
+<pre><code class="language-bash">sudo ln -s /opt/takemiko-cms-src/cms /opt/takemiko-cms
+</code></pre>
+<p><code>[VPS/bash: deploy]</code>:</p>
+<pre><code class="language-bash">sudo su - deploy
+cd /opt/takemiko-cms
+npm ci
+npm run build
+exit
+</code></pre>
+<h3 id="104-etctakemiko-cmsenv-を作成する" tabindex="-1">10.4 <code>/etc/takemiko-cms.env</code> を作成する</h3>
+<p><code>[VPS/bash: sudoユーザー]</code>。まずGitHubでもう1つ <strong>Fine-grained PAT</strong>（<strong>Contents: Read and write</strong>）を発行する <code>[ブラウザ]</code>（lifecycle subscriberが再ビルドを要求するために使う。10.3のPATとは別物）。</p>
+<p>シークレットを7個まとめて生成する:</p>
+<pre><code class="language-bash">for i in $(seq 7); do openssl rand -base64 32; echo; done
+</code></pre>
+<p><a href="./REFERENCE.html#3-%E8%A1%A8b-etctakemiko-cmsenv-%E3%81%AE%E5%AE%8C%E6%88%90%E5%BD%A2"><code>REFERENCE.md</code> 表B</a> の完成形どおりに、1回で全項目を埋める:</p>
+<pre><code class="language-bash">sudo nano /etc/takemiko-cms.env
+</code></pre>
+<pre><code>NODE_ENV=production
+HOST=127.0.0.1
+PORT=1337
+
+APP_KEYS=&lt;生成1&gt;,&lt;生成2&gt;
+API_TOKEN_SALT=&lt;生成3&gt;
+ADMIN_JWT_SECRET=&lt;生成4&gt;
+JWT_SECRET=&lt;生成5&gt;
+TRANSFER_TOKEN_SALT=&lt;生成6&gt;
+ENCRYPTION_KEY=&lt;生成7&gt;
+
+DATABASE_CLIENT=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=takemiko_cms
+DATABASE_USERNAME=strapi
+DATABASE_PASSWORD=&lt;10.2で生成したパスワード&gt;
+DATABASE_SSL=false
+
+GH_REPO=&lt;GITHUB_OWNER&gt;/takemikosite
+GH_TOKEN=&lt;このステップで発行したPAT&gt;
+</code></pre>
+<p><strong><code>HOST=127.0.0.1</code> は必須</strong>（Strapiを外部に直接晒さないため）。</p>
+<pre><code class="language-bash">sudo chown root:root /etc/takemiko-cms.env
+sudo chmod 600 /etc/takemiko-cms.env
+</code></pre>
+<h3 id="105-systemdサービスを配置する" tabindex="-1">10.5 systemdサービスを配置する</h3>
+<p><code>[ローカル/PowerShell]</code>:</p>
+<pre><code class="language-powershell">scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\systemd\takemiko-cms.service deploy@&lt;VPS_HOST&gt;:/tmp/takemiko-cms.service
+</code></pre>
+<p><code>[VPS/bash: sudoユーザー]</code>:</p>
+<pre><code class="language-bash">sudo mv /tmp/takemiko-cms.service /etc/systemd/system/takemiko-cms.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now takemiko-cms
+sudo systemctl status takemiko-cms
+journalctl -u takemiko-cms -n 50 --no-pager
+</code></pre>
+<p><code>Strapi started successfully</code> が出ていることを確認する。<code>ProtectSystem=strict</code> 等のサンドボックス設定は最初からこのユニットファイルに含まれている（後述の管理画面初期設定でアップロードが正常に動くかも確認する）。</p>
+<h3 id="106-cmstakemikocom-は-8-で配置済み" tabindex="-1">10.6 <a href="http://cms.takemiko.com">cms.takemiko.com</a> は §8 で配置済み</h3>
+<p>nginx側の <code>cms.&lt;DOMAIN&gt;</code> vhostは §8 で既に配置済み。動作確認:</p>
+<pre><code class="language-powershell">curl.exe -sI https://cms.&lt;DOMAIN&gt;/admin
+</code></pre>
+<p><code>200</code> または <code>302</code> を確認。</p>
+<h3 id="107-管理画面の初回セットアップ-ブラウザ" tabindex="-1">10.7 管理画面の初回セットアップ <code>[ブラウザ]</code></h3>
+<p><code>https://cms.&lt;DOMAIN&gt;/admin</code> を開き、初回管理者アカウントを作成する（メールアドレス・パスワードは直接ブラウザに入力する）。</p>
+<p>作成後、プロフィールメニュー → Interface language を <strong>日本語</strong> に変更 → 「保存」ボタンを押す（保存しないと反映されない）。</p>
+<p>テスト画像を1枚アップロードし、<code>ProtectSystem=strict</code> サンドボックスがアップロード書き込みを妨げていないことを確認する。</p>
+<h3 id="108-コンテンツを投入する" tabindex="-1">10.8 コンテンツを投入する</h3>
+<p>新規構築（移行元データが無い）場合は、Content-Type Builderで定義済みのコンテンツタイプ（記事・カテゴリ・制作実績・SNSリンク・グッズリンク）へ、管理画面から直接データを入力する。</p>
+<p>既存環境からの移行の場合は、移行元でTransfer Token（Push権限）を発行し、<code>npx strapi transfer --to https://cms.&lt;DOMAIN&gt;/admin --to-token &lt;token&gt;</code> を移行元で実行する。</p>
+<h3 id="109-本番apiトークンとgithub-secrets-ブラウザ-ローカルpowershell" tabindex="-1">10.9 本番APIトークンとGitHub Secrets <code>[ブラウザ]</code> <code>[ローカル/PowerShell]</code></h3>
+<p>Strapi管理画面 → Settings → API Tokens → Create new API Token（Read-only）を発行。</p>
+<p>GitHub Secretsに <a href="./REFERENCE.html#2-%E8%A1%A8a-github-secrets%E5%85%A811%E4%BB%B6"><code>REFERENCE.md</code> 表A</a> の⑦〜⑨を追加登録する。ローカルの <code>web/.env.production</code> にも同じ値を設定する（<code>pnpm release</code> が本番と同じ内容でビルドするため。gitignore済み）。</p>
+<h3 id="1010-fail2banstrapi管理画面用jail" tabindex="-1">10.10 fail2ban（Strapi管理画面用jail）</h3>
+<p><code>[ローカル/PowerShell]</code>:</p>
+<pre><code class="language-powershell">scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\fail2ban\filter.d\takemiko-cms.conf deploy@&lt;VPS_HOST&gt;:/tmp/takemiko-cms-filter.conf
+scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\fail2ban\jail.d\takemiko-cms.local deploy@&lt;VPS_HOST&gt;:/tmp/takemiko-cms.local
+</code></pre>
+<p><code>[VPS/bash: sudoユーザー]</code>:</p>
+<pre><code class="language-bash">sudo mv /tmp/takemiko-cms-filter.conf /etc/fail2ban/filter.d/takemiko-cms.conf
+sudo mv /tmp/takemiko-cms.local /etc/fail2ban/jail.d/takemiko-cms.local
+sudo systemctl restart fail2ban
+sudo fail2ban-client status takemiko-cms
+</code></pre>
+<h3 id="1011-経路bの動作確認" tabindex="-1">10.11 経路Bの動作確認</h3>
+<p>Strapi管理画面で記事を1本「公開」する → 約30秒後、GitHub Actionsの <code>Deploy (Content / 記事更新)</code> が起動する → 数分後に <code>https://&lt;DOMAIN&gt;/</code> の最新のお知らせに反映される → 「非公開」に戻すと同様に反映されて消える。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>journalctl -u takemiko-cms</code> に <code>Strapi started successfully</code> が出る</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 管理画面でのアップロードが成功する</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 記事の公開・非公開が本番サイトに反映される</label></li>
+</ul>
+<hr>
+<h2 id="11-バックアップ" tabindex="-1">11. バックアップ</h2>
+<p><code>[ローカル/PowerShell]</code> → <code>[VPS/bash: sudoユーザー]</code></p>
+<pre><code class="language-powershell">scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\backup\backup-cms.sh deploy@&lt;VPS_HOST&gt;:/tmp/backup-cms.sh
+</code></pre>
+<pre><code class="language-bash">sudo mv /tmp/backup-cms.sh /usr/local/sbin/backup-cms.sh
+sudo chown root:root /usr/local/sbin/backup-cms.sh
+sudo chmod 700 /usr/local/sbin/backup-cms.sh
+
+sudo /usr/local/sbin/backup-cms.sh
+sudo ls -la /var/backups/takemiko/
+</code></pre>
+<p><code>db-&lt;日時&gt;.sql.gz</code> と（アップロードがあれば）<code>uploads-&lt;日時&gt;.tar.gz</code> が作られていることを確認する。</p>
+<p>日次cronを設定する:</p>
+<pre><code class="language-bash">sudo tee /etc/cron.d/takemiko-backup &gt; /dev/null &lt;&lt;'EOF'
+0 18 * * * root /usr/local/sbin/backup-cms.sh &gt;&gt; /var/log/takemiko-backup.log 2&gt;&amp;1
+EOF
+</code></pre>
+<p>（UTC 18:00 = JST 03:00）</p>
+<p>ログローテーションを設定する:</p>
+<pre><code class="language-bash">sudo tee /etc/logrotate.d/takemiko-backup &gt; /dev/null &lt;&lt;'EOF'
+/var/log/takemiko-backup.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+}
+EOF
+</code></pre>
+<p>復元リハーサルを1回実施する（本番データには一切触れない。手順は <a href="./OPERATIONS.html#82-%E5%BE%A9%E5%85%83%E3%83%AA%E3%83%8F%E3%83%BC%E3%82%B5%E3%83%AB%E6%9C%AC%E7%95%AA%E3%81%AB%E8%A7%A6%E3%82%8C%E3%81%AA%E3%81%84"><code>OPERATIONS.md</code> §8.2</a> と同一）。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 手動実行でバックアップファイルが作られる</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/etc/cron.d/takemiko-backup</code> を設置した</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/etc/logrotate.d/takemiko-backup</code> を設置した</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 復元リハーサルを1回成功させた</label></li>
+</ul>
+<hr>
+<h2 id="12-cloudflare-workerお問い合わせフォーム" tabindex="-1">12. Cloudflare Worker（お問い合わせフォーム）</h2>
+<p><code>[ローカル/PowerShell]</code>、<code>worker/</code> ディレクトリで。</p>
+<h3 id="121-wrangler-にログイン" tabindex="-1">12.1 wrangler にログイン</h3>
+<pre><code class="language-powershell">npx wrangler login
+</code></pre>
+<h3 id="122-d1データベースを作成する" tabindex="-1">12.2 D1データベースを作成する</h3>
+<pre><code class="language-powershell">npx wrangler d1 create takemiko-contact
+</code></pre>
+<p>出力の <code>database_id</code> をコピーし、<code>worker/wrangler.toml</code> の <code>database_id</code> を<strong>この値に置き換えてコミットする</strong>（このリポジトリには前回構築時のIDが残っているため、必ず新しい値に置き換える）。</p>
+<h3 id="123-スキーマを適用する" tabindex="-1">12.3 スキーマを適用する</h3>
+<p><strong>新規構築では <code>schema.sql</code> のみを適用する</strong>（<code>migrations/</code> は既存データベースへの差分なので流さない。<a href="./REFERENCE.html#6-%E8%A1%A8e-d1-%E3%82%B9%E3%82%AD%E3%83%BC%E3%83%9E%E5%8F%B0%E5%B8%B3worker"><code>REFERENCE.md</code> §6</a> 参照）:</p>
+<pre><code class="language-powershell">npx wrangler d1 execute takemiko-contact --remote --file=schema.sql
+</code></pre>
+<h3 id="124-turnstileサイトを登録する-ブラウザ" tabindex="-1">12.4 Turnstileサイトを登録する <code>[ブラウザ]</code></h3>
+<p>Cloudflareダッシュボード → Turnstile → サイトを追加。ドメイン <code>&lt;DOMAIN&gt;</code>、ウィジェットモード Managed。Site Key（公開情報）とSecret Key（秘密情報）を控える。</p>
+<h3 id="125-resendに登録する-ブラウザ" tabindex="-1">12.5 Resendに登録する <code>[ブラウザ]</code></h3>
+<p><a href="https://resend.com">resend.com</a> でアカウント作成、APIキーを発行する（無料枠で十分、ドメイン認証は不要）。デフォルトの送信元 <code>onboarding@resend.dev</code> は、Resend登録メールアドレス宛にのみ送信できる制限があるが、運営者への通知用途なので問題ない。</p>
+<h3 id="126-workerにシークレットを登録する" tabindex="-1">12.6 Workerにシークレットを登録する</h3>
+<pre><code class="language-powershell">npx wrangler secret put TURNSTILE_SECRET
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put CONTACT_NOTIFY_EMAIL
+</code></pre>
+<p>それぞれプロンプトで値を直接入力する。</p>
+<h3 id="127-デプロイする" tabindex="-1">12.7 デプロイする</h3>
+<pre><code class="language-powershell">npx wrangler deploy
+</code></pre>
+<p>出力される <code>&lt;WORKER_URL&gt;</code>（例: <code>https://form.takemiko.workers.dev</code>）を控える。同時に <code>wrangler.toml</code> の <code>[triggers]</code> に設定されたCron（データ保持期限切れの自動削除・通知メール再送）も有効化される。</p>
+<h3 id="128-worker-urlを3箇所に反映する" tabindex="-1">12.8 Worker URLを3箇所に反映する</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>web/.env</code> と <code>web/.env.production</code> に <code>PUBLIC_CONTACT_ENDPOINT=&lt;WORKER_URL&gt;</code> と <code>PUBLIC_TURNSTILE_SITE_KEY=&lt;12.4のSite Key&gt;</code> を追加</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> GitHub Secretsに同じ2つを登録（<a href="./REFERENCE.html#2-%E8%A1%A8a-github-secrets%E5%85%A811%E4%BB%B6"><code>REFERENCE.md</code> 表A</a> ⑩⑪）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>deploy/nginx/security-headers.conf</code> のCSP <code>connect-src</code> に含まれる <code>&lt;WORKER_URL&gt;</code> が実際のURLと一致しているか確認し、違えば書き換えて §8 と同じ手順で再配置・<code>nginx -t</code>・reload</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>web</code> を <code>pnpm release</code> で再リリース</label></li>
+</ul>
+<h3 id="129-動作確認" tabindex="-1">12.9 動作確認</h3>
+<p><code>https://&lt;DOMAIN&gt;/contact/</code> を開き、フォームが表示される（「準備中」フォールバックでない）ことを確認。1件テスト送信し、12.5で設定したメールアドレスに通知が届くことを確認。</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>database_id</code> を新しい値に置き換えてコミットした</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/contact/</code> でフォームが表示される</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> テスト送信で通知メールが届く</label></li>
+</ul>
+<hr>
+<h2 id="13-受け入れ検証" tabindex="-1">13. 受け入れ検証</h2>
+<p>すべて新規構築後、または既存環境からの移行後に一度通しで実行する。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>確認項目</th>
+<th>コマンド/操作</th>
+<th>期待結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>HTTPS</td>
+<td><code>curl.exe -sI https://&lt;DOMAIN&gt;/</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>HTTP→HTTPSリダイレクト</td>
+<td><code>curl.exe -sI http://&lt;DOMAIN&gt;/</code></td>
+<td><code>301</code> → <code>https://&lt;DOMAIN&gt;/</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>www→apex正規化</td>
+<td><code>curl.exe -sI https://www.&lt;DOMAIN&gt;/</code></td>
+<td><code>301</code> → <code>https://&lt;DOMAIN&gt;/</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>静的アセットキャッシュ</td>
+<td><code>curl.exe -sI https://&lt;DOMAIN&gt;/_astro/&lt;実ファイル名&gt;</code></td>
+<td><code>Cache-Control: ...immutable</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>404</td>
+<td><code>curl.exe -sI https://&lt;DOMAIN&gt;/no-such-page/</code></td>
+<td><code>404</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>セキュリティヘッダー</td>
+<td><code>curl.exe -sI https://&lt;DOMAIN&gt;/ | Select-String &quot;x-content-type|x-frame|referrer-policy|strict-transport|content-security-policy&quot;</code></td>
+<td>5行前後表示</td>
+</tr>
+<tr>
+<td>7</td>
+<td>CMS管理画面</td>
+<td><code>curl.exe -sI https://cms.&lt;DOMAIN&gt;/admin</code></td>
+<td><code>200</code>/<code>302</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>CMS未認証API</td>
+<td><code>curl.exe -sI https://cms.&lt;DOMAIN&gt;/api/articles</code></td>
+<td><code>403</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>CMS CORS制限</td>
+<td><code>curl.exe -sI -H &quot;Origin: https://evil.example.com&quot; https://cms.&lt;DOMAIN&gt;/api/articles</code></td>
+<td><code>Access-Control-Allow-Origin</code> が返らない</td>
+</tr>
+<tr>
+<td>10</td>
+<td>フォーム: トークンなし</td>
+<td>POST（本文は<a href="./OPERATIONS.html#12-%E5%A4%96%E5%BD%A2%E7%A2%BA%E8%AA%8D"><code>OPERATIONS.md</code> §12</a>参照）</td>
+<td><code>400</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>フォーム: 不正Origin</td>
+<td>同上、<code>Origin: https://evil.example.com</code></td>
+<td><code>403</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>フォーム: レート制限</td>
+<td>同一IPから6回連続POST</td>
+<td>6回目が <code>429</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>フォーム: ハニーポット</td>
+<td><code>website</code> フィールドを埋めて送信</td>
+<td><code>200</code>（成功を装う）だがD1に未保存</td>
+</tr>
+<tr>
+<td>14</td>
+<td>バックアップ生成</td>
+<td><code>sudo /usr/local/sbin/backup-cms.sh</code> → <code>ls</code></td>
+<td>ファイルが増える</td>
+</tr>
+<tr>
+<td>15</td>
+<td>証明書更新</td>
+<td><code>sudo certbot renew --dry-run</code></td>
+<td>成功</td>
+</tr>
+<tr>
+<td>16</td>
+<td>fail2ban</td>
+<td><code>sudo fail2ban-client status takemiko-cms</code></td>
+<td>ジェイルが有効</td>
+</tr>
+<tr>
+<td>17</td>
+<td>経路A/B一致</td>
+<td><code>pnpm release</code>（無変更）→ 経路Bを<code>workflow_dispatch</code>で手動実行 → 目視比較</td>
+<td>差分なし</td>
+</tr>
+</tbody>
+</table>
+<p>すべてチェックできたら再構築完了。</p>
+<hr>
+<h2 id="14-別ドメイン別アカウントで建てる場合" tabindex="-1">14. 別ドメイン・別アカウントで建てる場合</h2>
+<p>このリポジトリのコードは <code>&lt;DOMAIN&gt;</code>・Cloudflareアカウント固有の値を複数箇所にハードコードしている。<a href="./REFERENCE.html#8-%E8%A1%A8g-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3url%E3%81%8C%E3%83%8F%E3%83%BC%E3%83%89%E3%82%B3%E3%83%BC%E3%83%89%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B%E7%AE%87%E6%89%80"><code>REFERENCE.md</code> 表G</a> の全箇所を書き換えてからこのガイドを開始すること。特に <code>worker/wrangler.toml</code> の <code>database_id</code> は §12.2 で新しい値に置き換わるまで前の環境の値が残っている点に注意。</p>
+<hr>
+<h2 id="15-トラブルシューティング" tabindex="-1">15. トラブルシューティング</h2>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+<th>対処</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nginx -t</code> が失敗する</td>
+<td><code>security-headers.conf</code> が未配置、または証明書パスが存在しない</td>
+<td>§8の順序（snippets→vhost）を再確認</td>
+</tr>
+<tr>
+<td>certbotが80番を確保できないと言う</td>
+<td>ufwまたはクラウド側フィルタが閉じている／別プロセスが80番を使用中</td>
+<td><code>sudo ss -tlnp | grep :80</code>、§4.3を再確認</td>
+</tr>
+<tr>
+<td>Strapiが起動しない・すぐ落ちる</td>
+<td><code>/etc/takemiko-cms.env</code> の記述ミス、または <code>ProtectSystem=strict</code> が想定外のパスへの書き込みを拒否している</td>
+<td><code>journalctl -u takemiko-cms -n 100 --no-pager</code> でエラー内容を確認</td>
+</tr>
+<tr>
+<td>GitHub Actionsのrsyncが失敗する</td>
+<td><code>SSH_KNOWN_HOSTS</code> が古い／VPSのホストキーが変わった</td>
+<td><code>ssh-keyscan</code> を取り直してSecretを更新</td>
+</tr>
+<tr>
+<td>記事を公開しても経路Bが走らない</td>
+<td><code>GH_TOKEN</code>/<code>GH_REPO</code> の設定ミス、またはPATの権限不足（Contents: Read and write が必要）</td>
+<td><code>/etc/takemiko-cms.env</code> を確認、Strapiを再起動してログを見る</td>
+</tr>
+<tr>
+<td>CORS制限後に管理画面のフロントが壊れた</td>
+<td><code>cms/config/middlewares.ts</code> の <code>origin</code> がアクセスしているドメインと不一致</td>
+<td>表G参照、<code>https://cms.&lt;DOMAIN&gt;</code> と完全一致させる</td>
+</tr>
+<tr>
+<td><code>strapi transfer</code> が接続できない</td>
+<td>Transfer Tokenの権限不足、またはURLの末尾に <code>/admin</code> が抜けている</td>
+<td><code>--to</code> の値を <code>https://cms.&lt;DOMAIN&gt;/admin</code> の形にする</td>
+</tr>
+<tr>
+<td>フォーム送信が常にCSP違反でブロックされる</td>
+<td><code>security-headers.conf</code> のCSPに実際のWorker URLが含まれていない</td>
+<td>§12.8参照</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="付録-全チェックリストコピー用" tabindex="-1">付録: 全チェックリスト（コピー用）</h2>
+<pre><code>□ §2  必要なアカウントをすべて用意した
+□ §3  ローカルで pnpm build / pnpm test / npm test が通る
+□ §4  ufw allow OpenSSH → enable → 80,443許可 の順で実行、クラウド側フィルタも開放、fail2ban(sshd)有効
+□ §5  deploy ユーザーでSSHログインできる（sudoなし）
+□ §6  DNS 3レコードが伝播した
+□ §7  webroot方式で証明書を取得した
+□ §8  nginx -t が通り、443で応答する
+□ §9  経路Aで初回デプロイ、curlチェック4種が通る
+□ §10 Strapiが起動し、アップロードが成功し、経路Bで記事が反映される
+□ §11 バックアップの手動実行・cron・logrotate・復元リハーサル
+□ §12 Workerがデプロイされ、フォーム送受信が成功する
+□ §13 受け入れ検証17項目すべて完了
+</code></pre>
+
+</main>
+</div>
+</body>
+</html>

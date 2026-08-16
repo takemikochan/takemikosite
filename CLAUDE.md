@@ -47,9 +47,11 @@ Run a single vitest test: `pnpm exec vitest run <path>` (web) or `npx vitest run
 - Path B (content): Strapi's `cms/src/index.ts` lifecycle subscriber fires a `repository_dispatch` on publish/update/delete (30s debounced) → `.github/workflows/deploy-content.yml` builds from `main` and deploys.
 - Both converge on `.github/actions/deploy-dist` (composite action: sanity-check → atomic rsync + symlink swap on the VPS). `release.sh`'s three guards (clean tree, HEAD == origin/main, sanity-checked build output) exist specifically to stop Path A and Path B from producing different output for the same commit.
 
-**Deploy topology**: static site and Strapi run on the same VPS, deployed by the same `deploy` SSH user — deliberately not yet split into separate least-privilege users (tracked as a known gap, see README.md "Known gaps"). nginx sits in front of both; note that nginx's `add_header` does **not** inherit into a `location {}` block that defines its own `add_header` — see `deploy/nginx/security-headers.conf` and the `include` pattern used in `deploy/nginx/takemiko.com.conf` before changing headers.
+**Deploy topology**: static site and Strapi run on the same VPS, deployed by the same `deploy` SSH user — deliberately not yet split into separate least-privilege users (tracked as a known gap, see `docs/OPERATIONS.md` §15 "既知の課題"). nginx sits in front of both; note that nginx's `add_header` does **not** inherit into a `location {}` block that defines its own `add_header` — see `deploy/nginx/security-headers.conf` and the `include` pattern used in `deploy/nginx/takemiko.com.conf` before changing headers.
 
-**Secrets discipline**: this repo is public. `.env*` (except `.env.example`) and `worker/.dev.vars` are gitignored; production secrets are set via `wrangler secret put` / VPS-local files, never committed. When editing deploy runbooks in `deploy/*-RUNBOOK.md`, keep secret-generating/viewing steps as commands the human runs themselves in their own terminal.
+**Secrets discipline**: this repo is public. `.env*` (except `.env.example`) and `worker/.dev.vars` are gitignored; production secrets are set via `wrangler secret put` / VPS-local files, never committed. When editing `docs/REBUILD.md` or `docs/OPERATIONS.md`, keep secret-generating/viewing steps as commands the human runs themselves in their own terminal.
+
+**Docs are generated in pairs**: `docs/REBUILD.md`, `docs/OPERATIONS.md`, `docs/REFERENCE.md` are the source of truth; `docs/*.html` are mechanically rendered from them via `docs/tools/render.mjs` (`cd docs && npm run render`). CI (`.github/workflows/ci.yml`, `docs` job) fails if the committed HTML doesn't match a fresh render — after editing any `docs/*.md`, always re-run the renderer and commit the resulting `.html` in the same change.
 
 ## Where things live
 
@@ -64,4 +66,6 @@ Run a single vitest test: `pnpm exec vitest run <path>` (web) or `npx vitest run
 | Contact form logic (Turnstile/D1/rate-limit) | `worker/src/index.ts` |
 | Release guards | `web/scripts/release.sh` |
 | Shared deploy step | `.github/actions/deploy-dist/action.yml` |
-| Manual VPS setup runbooks | `deploy/PHASE4..7-RUNBOOK.md` |
+| From-scratch rebuild guide | `docs/REBUILD.md` |
+| Day-to-day operations guide | `docs/OPERATIONS.md` |
+| Secrets/env var/D1 migration reference | `docs/REFERENCE.md` |

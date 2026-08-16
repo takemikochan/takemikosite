@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>リファレンス — シークレット・環境変数・配置先の一覧 — たけるのみこと Official Site</title>
+<style>
+
+:root {
+  color-scheme: light dark;
+  --bg: #fdf8f6;
+  --surface: #ffffff;
+  --surface-muted: #f7eeea;
+  --border: #eedfd9;
+  --text: #241b1a;
+  --text-muted: #6b5a56;
+  --primary: #c01e2a;
+  --accent: #00708a;
+  --code-bg: #241b1a;
+  --code-text: #f7eeea;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1413;
+    --surface: #241b1a;
+    --surface-muted: #2e2321;
+    --border: #4a3a37;
+    --text: #f2e9e6;
+    --text-muted: #c2b0ac;
+    --primary: #ef7b83;
+    --accent: #6fc7dd;
+    --code-bg: #100c0b;
+    --code-text: #f2e9e6;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, "Noto Sans JP", system-ui, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem;
+}
+.toc {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+.toc-title { margin: 0 0 0.5rem; font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0.15rem 0; }
+.toc .toc-h3 { padding-left: 1rem; opacity: 0.85; }
+.toc a { color: var(--text-muted); text-decoration: none; }
+.toc a:hover { color: var(--primary); text-decoration: underline; }
+.content { min-width: 0; max-width: 860px; }
+h1, h2, h3, h4 { line-height: 1.4; scroll-margin-top: 1.5rem; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+h3 { font-size: 1.1rem; color: var(--accent); }
+p { margin: 0.9em 0; }
+a { color: var(--accent); }
+code {
+  background: var(--surface-muted);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1.2em 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+table thead { display: table-header-group; }
+table tbody { display: table-row-group; }
+th, td { border: 1px solid var(--border); padding: 0.5em 0.75em; text-align: left; vertical-align: top; }
+th { background: var(--surface-muted); }
+blockquote { margin: 1em 0; padding: 0.25em 1em; border-left: 3px solid var(--primary); background: var(--surface-muted); border-radius: 0 6px 6px 0; }
+ul.contains-task-list { list-style: none; padding-left: 0.25em; }
+.task-list-item { display: flex; align-items: flex-start; gap: 0.5em; margin: 0.35em 0; }
+.task-list-item input[type="checkbox"] { margin-top: 0.35em; width: 1.05em; height: 1.05em; }
+hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { position: static; max-height: none; }
+}
+@media print {
+  .toc { display: none; }
+  .layout { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="目次"><p class="toc-title">目次</p><ul><li class="toc-h2"><a href="#1-プレースホルダ規約">1. プレースホルダ規約</a></li>
+<li class="toc-h2"><a href="#2-表a-github-secrets全11件">2. 表A: GitHub Secrets（全11件）</a></li>
+<li class="toc-h2"><a href="#3-表b-etctakemiko-cmsenv-の完成形">3. 表B: `/etc/takemiko-cms.env` の完成形</a></li>
+<li class="toc-h2"><a href="#4-表c-ローカル環境-vs-本番環境の対応">4. 表C: ローカル環境 vs 本番環境の対応</a></li>
+<li class="toc-h2"><a href="#5-表d-cloudflare-worker-の-vars-と-secrets">5. 表D: Cloudflare Worker の vars と secrets</a></li>
+<li class="toc-h2"><a href="#6-表e-d1-スキーマ台帳worker">6. 表E: D1 スキーマ台帳（`worker/`）</a></li>
+<li class="toc-h2"><a href="#7-表f-vps-ファイル配置マップ">7. 表F: VPS ファイル配置マップ</a></li>
+<li class="toc-h2"><a href="#8-表g-ドメインurlがハードコードされている箇所">8. 表G: ドメイン/URLがハードコードされている箇所</a></li>
+<li class="toc-h2"><a href="#9-表h-セキュリティレビュー指摘コードの対応表">9. 表H: セキュリティレビュー指摘コードの対応表</a></li>
+<li class="toc-h2"><a href="#10-用語集">10. 用語集</a></li></ul></nav>
+<main class="content">
+<h1 id="リファレンス-シークレット環境変数配置先の一覧" tabindex="-1">リファレンス — シークレット・環境変数・配置先の一覧</h1>
+<p><a href="./REBUILD.html"><code>REBUILD.md</code></a>（再構築ガイド）と <a href="./OPERATIONS.html"><code>OPERATIONS.md</code></a>（運用ガイド）の両方から参照される共通の定義集です。値そのものの説明はここに一本化し、他の2文書は名前だけを列挙してここへリンクします。二重管理を避けるため、値の意味を変更するときは必ずこのファイルを更新してください。</p>
+<h2 id="1-プレースホルダ規約" tabindex="-1">1. プレースホルダ規約</h2>
+<p>このリポジトリのドキュメントは公開されているため、実際の値（VPSのIPアドレス等）を書きません。以下のプレースホルダで統一します。</p>
+<table>
+<thead>
+<tr>
+<th>プレースホルダ</th>
+<th>意味</th>
+<th>実値の控え方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;VPS_HOST&gt;</code></td>
+<td>VPSのホスト名またはIPアドレス</td>
+<td>あなたの手元のパスワードマネージャ等（このリポジトリには書かない）</td>
+</tr>
+<tr>
+<td><code>&lt;DOMAIN&gt;</code></td>
+<td>本番ドメイン（例では <code>takemiko.com</code>）</td>
+<td>このプロジェクトでは確定値。ドメインを変更する場合は §7「ドメイン/URLがハードコードされている箇所」参照</td>
+</tr>
+<tr>
+<td><code>&lt;GITHUB_OWNER&gt;</code></td>
+<td>GitHubのユーザー名/Organization名</td>
+<td><code>gh repo view --json owner</code> 等で確認</td>
+</tr>
+<tr>
+<td><code>&lt;WORKER_URL&gt;</code></td>
+<td>お問い合わせWorkerのURL（例: <code>https://form.takemiko.workers.dev</code>）</td>
+<td><code>wrangler deploy</code> の出力。秘密情報ではないが、変更時は §7 の3箇所を更新する</td>
+</tr>
+<tr>
+<td><code>&lt;SSH_KEY_PATH&gt;</code></td>
+<td>デプロイ用SSH秘密鍵のローカルパス（例では <code>C:\Users\mikoto\.ssh\takemiko_github</code>）</td>
+<td>生成時に自分で決めた場所</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-表a-github-secrets全11件" tabindex="-1">2. 表A: GitHub Secrets（全11件）</h2>
+<p>Settings → Secrets and variables → Actions で登録する。<code>.github/workflows/deploy-release.yml</code> は①〜⑥を、<code>.github/workflows/deploy-content.yml</code> は①〜⑪すべてを使う。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Secret名</th>
+<th>値の内容</th>
+<th>発行元</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td><code>SSH_PRIVATE_KEY</code></td>
+<td>デプロイ用SSH秘密鍵の中身全体</td>
+<td>ローカルで <code>ssh-keygen</code></td>
+</tr>
+<tr>
+<td>②</td>
+<td><code>SSH_HOST</code></td>
+<td><code>&lt;VPS_HOST&gt;</code></td>
+<td>VPS契約時</td>
+</tr>
+<tr>
+<td>③</td>
+<td><code>SSH_USER</code></td>
+<td><code>deploy</code></td>
+<td>固定値</td>
+</tr>
+<tr>
+<td>④</td>
+<td><code>SSH_PORT</code></td>
+<td><code>22</code></td>
+<td>固定値</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td><code>SSH_KNOWN_HOSTS</code></td>
+<td><code>ssh-keyscan -p 22 &lt;VPS_HOST&gt;</code> の出力</td>
+<td>ローカルで取得</td>
+</tr>
+<tr>
+<td>⑥</td>
+<td><code>DEPLOY_PATH</code></td>
+<td><code>/var/www/takemiko</code></td>
+<td>固定値</td>
+</tr>
+<tr>
+<td>⑦</td>
+<td><code>STRAPI_URL</code></td>
+<td><code>https://cms.&lt;DOMAIN&gt;</code></td>
+<td>固定値</td>
+</tr>
+<tr>
+<td>⑧</td>
+<td><code>STRAPI_TOKEN</code></td>
+<td>Strapi管理画面で発行するread-only APIトークン</td>
+<td>Settings → API Tokens</td>
+</tr>
+<tr>
+<td>⑨</td>
+<td><code>PUBLIC_GA_ID</code></td>
+<td>GA4測定ID（未使用なら空文字）</td>
+<td>Google Analytics</td>
+</tr>
+<tr>
+<td>⑩</td>
+<td><code>PUBLIC_CONTACT_ENDPOINT</code></td>
+<td><code>&lt;WORKER_URL&gt;</code></td>
+<td><code>wrangler deploy</code> の出力</td>
+</tr>
+<tr>
+<td>⑪</td>
+<td><code>PUBLIC_TURNSTILE_SITE_KEY</code></td>
+<td>Turnstileのサイトキー（公開情報）</td>
+<td>Cloudflareダッシュボード → Turnstile</td>
+</tr>
+</tbody>
+</table>
+<p>①〜⑥が揃わないと経路A（コード変更）が動かない。⑦〜⑪が揃わないと経路B（記事更新）のビルドがモックデータにフォールバックする（ビルド自体は失敗しない）。</p>
+<h2 id="3-表b-etctakemiko-cmsenv-の完成形" tabindex="-1">3. 表B: <code>/etc/takemiko-cms.env</code> の完成形</h2>
+<p>VPS上に <code>root:root 0600</code> で配置する（<code>cms/.env.example</code> と対応）。<strong>一度にこの完成形を作る</strong>（後から2段階で編集しない）。</p>
+<pre><code>NODE_ENV=production
+HOST=127.0.0.1
+PORT=1337
+
+APP_KEYS=&lt;生成した値1&gt;,&lt;生成した値2&gt;
+API_TOKEN_SALT=&lt;生成した値3&gt;
+ADMIN_JWT_SECRET=&lt;生成した値4&gt;
+JWT_SECRET=&lt;生成した値5&gt;
+TRANSFER_TOKEN_SALT=&lt;生成した値6&gt;
+ENCRYPTION_KEY=&lt;生成した値7&gt;
+
+DATABASE_CLIENT=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=takemiko_cms
+DATABASE_USERNAME=strapi
+DATABASE_PASSWORD=&lt;DBロール作成時に生成したパスワード&gt;
+DATABASE_SSL=false
+
+GH_REPO=&lt;GITHUB_OWNER&gt;/takemikosite
+GH_TOKEN=&lt;Contents: Read and write 権限のFine-grained PAT&gt;
+</code></pre>
+<ul>
+<li><code>APP_KEYS</code> は複数キーが推奨のため、生成した値のうち2つをカンマ区切りで入れる（<code>openssl rand -base64 32</code> を7回実行し、最初の2つを <code>APP_KEYS</code>、残り5つをそれぞれの項目に割り当てる）。</li>
+<li><code>HOST=127.0.0.1</code> は必須（Strapiを外部に直接晒さないため。外部からは常にnginx経由）。</li>
+<li><code>GH_REPO</code>/<code>GH_TOKEN</code> は <code>cms/src/index.ts</code> のlifecycle subscriberが <code>repository_dispatch</code> を送るために使う（Contents: Read/Write権限のPAT。§10「シークレットのローテーション」参照）。</li>
+</ul>
+<h2 id="4-表c-ローカル環境-vs-本番環境の対応" tabindex="-1">4. 表C: ローカル環境 vs 本番環境の対応</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>ローカル</th>
+<th>本番（VPS）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQLポート</td>
+<td>5433（プロジェクト専用クラスタ、<code>cms/.pgdata/</code>）</td>
+<td>5432（VPS標準）</td>
+</tr>
+<tr>
+<td>DB接続ユーザー</td>
+<td><code>postgres</code></td>
+<td><code>strapi</code>（専用ロール）</td>
+</tr>
+<tr>
+<td>DB名</td>
+<td><code>takemiko_cms</code></td>
+<td><code>takemiko_cms</code></td>
+</tr>
+<tr>
+<td><code>cms/.env</code> の役割</td>
+<td>ローカル開発用（gitignore済み）</td>
+<td>使用しない（<code>/etc/takemiko-cms.env</code> を使う）</td>
+</tr>
+<tr>
+<td><code>web/.env</code> の役割</td>
+<td><code>pnpm dev</code> 用。ローカルStrapiまたは未設定でモック</td>
+<td>ローカルでの検証専用。VPSでは使わない</td>
+</tr>
+<tr>
+<td><code>web/.env.production</code> の役割</td>
+<td><code>pnpm release</code> 実行時に読み込まれる本番相当の値</td>
+<td>実体は無し。値はGitHub Secretsとして経路Bに渡る</td>
+</tr>
+<tr>
+<td><code>worker/.dev.vars</code> の役割</td>
+<td><code>wrangler dev</code> 用のローカルシークレット（gitignore済み）</td>
+<td>使用しない（<code>wrangler secret put</code> で本番に個別登録）</td>
+</tr>
+</tbody>
+</table>
+<p><code>cms/.env.example</code> の既定 <code>DATABASE_NAME=strapi</code> / <code>DATABASE_USERNAME=strapi</code> は Strapi公式のテンプレート値。このプロジェクトではローカル・本番とも <code>takemiko_cms</code> に読み替える。</p>
+<h2 id="5-表d-cloudflare-worker-の-vars-と-secrets" tabindex="-1">5. 表D: Cloudflare Worker の vars と secrets</h2>
+<p><code>worker/wrangler.toml</code> 参照。</p>
+<table>
+<thead>
+<tr>
+<th>名前</th>
+<th>種別</th>
+<th>値</th>
+<th>設定場所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ALLOWED_ORIGIN</code></td>
+<td><code>[vars]</code>（公開・コミット済み）</td>
+<td><code>https://&lt;DOMAIN&gt;</code></td>
+<td><code>wrangler.toml</code> に直接記述</td>
+</tr>
+<tr>
+<td><code>database_id</code>（D1バインディング）</td>
+<td><code>[[d1_databases]]</code>（公開・コミット済み）</td>
+<td><code>wrangler d1 create</code> の出力</td>
+<td><code>wrangler.toml</code> に直接記述</td>
+</tr>
+<tr>
+<td><code>TURNSTILE_SECRET</code></td>
+<td>secret</td>
+<td>Turnstile登録時に発行されるSecret Key</td>
+<td><code>wrangler secret put TURNSTILE_SECRET</code></td>
+</tr>
+<tr>
+<td><code>RESEND_API_KEY</code></td>
+<td>secret</td>
+<td>Resendダッシュボードで発行</td>
+<td><code>wrangler secret put RESEND_API_KEY</code></td>
+</tr>
+<tr>
+<td><code>CONTACT_NOTIFY_EMAIL</code></td>
+<td>secret</td>
+<td>通知を受け取りたいメールアドレス</td>
+<td><code>wrangler secret put CONTACT_NOTIFY_EMAIL</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-表e-d1-スキーマ台帳worker" tabindex="-1">6. 表E: D1 スキーマ台帳（<code>worker/</code>）</h2>
+<table>
+<thead>
+<tr>
+<th>ファイル</th>
+<th>用途</th>
+<th>適用先</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schema.sql</code></td>
+<td><strong>新規構築専用</strong>。<code>submissions</code> テーブル（<code>delivery_status</code>等を含む完成形）と <code>request_attempts</code> テーブルの両方を含む、常に最新の完成形</td>
+<td>新しいD1データベースを作った直後、1回だけ実行</td>
+</tr>
+<tr>
+<td><code>migrations/0001_delivery_tracking.sql</code></td>
+<td>既存の<code>submissions</code>テーブルに <code>delivery_status</code>/<code>delivery_attempts</code>/<code>last_error</code> を追加するALTER TABLE</td>
+<td>本番D1に適用済み（2026-08-16）</td>
+</tr>
+<tr>
+<td><code>migrations/0002_request_attempts.sql</code></td>
+<td>レート制限用の <code>request_attempts</code> テーブルを新設</td>
+<td>本番D1に適用済み（2026-08-16）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>運用規約（詳細は <code>OPERATIONS.md</code> §6）</strong>: <code>schema.sql</code> は常に「今すぐ新規構築したら何が出来上がるか」を表す完成形として保守する。既存の本番D1に対しては <code>migrations/NNNN_*.sql</code> を個別に適用する。新規構築時に <code>migrations/</code> を流さない（<code>schema.sql</code> と内容が重複し、<code>CREATE TABLE</code> の衝突やカラム重複エラーになる）。</p>
+<h2 id="7-表f-vps-ファイル配置マップ" tabindex="-1">7. 表F: VPS ファイル配置マップ</h2>
+<table>
+<thead>
+<tr>
+<th>リポジトリのパス</th>
+<th>VPS上の配置先</th>
+<th>所有者:グループ</th>
+<th>権限</th>
+<th>反映コマンド</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>deploy/nginx/security-headers.conf</code></td>
+<td><code>/etc/nginx/snippets/security-headers.conf</code></td>
+<td>root:root</td>
+<td>644</td>
+<td><code>sudo mv</code> → <code>nginx -t</code> → <code>systemctl reload nginx</code></td>
+</tr>
+<tr>
+<td><code>deploy/nginx/takemiko.com.conf</code></td>
+<td><code>/etc/nginx/sites-available/takemiko.com.conf</code>（<code>sites-enabled/</code>へsymlink）</td>
+<td>root:root</td>
+<td>644</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>deploy/nginx/cms.takemiko.com.conf</code></td>
+<td><code>/etc/nginx/sites-available/cms.takemiko.com.conf</code>（<code>sites-enabled/</code>へsymlink）</td>
+<td>root:root</td>
+<td>644</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>deploy/systemd/takemiko-cms.service</code></td>
+<td><code>/etc/systemd/system/takemiko-cms.service</code></td>
+<td>root:root</td>
+<td>644</td>
+<td><code>sudo mv</code> → <code>systemctl daemon-reload</code> → <code>systemctl restart takemiko-cms</code></td>
+</tr>
+<tr>
+<td><code>deploy/fail2ban/filter.d/takemiko-cms.conf</code></td>
+<td><code>/etc/fail2ban/filter.d/takemiko-cms.conf</code></td>
+<td>root:root</td>
+<td>644</td>
+<td><code>sudo mv</code> → <code>systemctl restart fail2ban</code></td>
+</tr>
+<tr>
+<td><code>deploy/fail2ban/jail.d/takemiko-cms.local</code></td>
+<td><code>/etc/fail2ban/jail.d/takemiko-cms.local</code></td>
+<td>root:root</td>
+<td>644</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>deploy/backup/backup-cms.sh</code></td>
+<td><code>/usr/local/sbin/backup-cms.sh</code></td>
+<td>root:root</td>
+<td><strong>700</strong>（DBパスワードを読むため）</td>
+<td><code>sudo mv</code> → <code>chown root:root</code> → <code>chmod 700</code></td>
+</tr>
+<tr>
+<td>（リポジトリ外で作成）</td>
+<td><code>/etc/takemiko-cms.env</code>（表B参照）</td>
+<td>root:root</td>
+<td><strong>600</strong></td>
+<td><code>sudo nano</code> で直接編集</td>
+</tr>
+<tr>
+<td>（リポジトリ外で作成）</td>
+<td><code>/etc/cron.d/takemiko-backup</code></td>
+<td>root:root</td>
+<td>644</td>
+<td><code>sudo nano</code> で直接編集</td>
+</tr>
+<tr>
+<td><code>cms/</code>（sparse-checkout）</td>
+<td><code>/opt/takemiko-cms-src/cms</code>（<code>/opt/takemiko-cms</code> からsymlink）</td>
+<td>deploy:deploy</td>
+<td>-</td>
+<td><code>git pull</code> → <code>npm ci &amp;&amp; npm run build</code></td>
+</tr>
+</tbody>
+</table>
+<p>全てのVPS転送は、GitHub Actions用のデプロイ鍵（<code>deploy</code>ユーザー、sudo権限なし）を使い、いったん <code>/tmp/</code> に置いてから <code>sudo mv</code> で最終配置に移す（<code>/tmp</code> は誰でも書き込めるため、sudoを持たない <code>deploy</code> 鍵でも転送できる）。</p>
+<h2 id="8-表g-ドメインurlがハードコードされている箇所" tabindex="-1">8. 表G: ドメイン/URLがハードコードされている箇所</h2>
+<p>別ドメイン・別Cloudflareアカウントで再構築する場合、以下すべてを書き換える必要がある。</p>
+<table>
+<thead>
+<tr>
+<th>ファイル</th>
+<th>該当箇所</th>
+<th>値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>web/astro.config.mjs</code></td>
+<td><code>site:</code></td>
+<td><code>https://&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>web/astro.config.mjs</code></td>
+<td><code>image.domains</code></td>
+<td><code>cms.&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>web/src/data/site.ts</code></td>
+<td><code>url</code></td>
+<td><code>https://&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>web/src/data/site.ts</code></td>
+<td><code>contactEmail</code></td>
+<td><code>contact@&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>cms/config/middlewares.ts</code></td>
+<td><code>strapi::cors</code> の <code>origin</code></td>
+<td><code>https://cms.&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>worker/wrangler.toml</code></td>
+<td><code>ALLOWED_ORIGIN</code></td>
+<td><code>https://&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>worker/wrangler.toml</code></td>
+<td><code>database_id</code></td>
+<td>新しいCloudflareアカウントで <code>wrangler d1 create</code> した値</td>
+</tr>
+<tr>
+<td><code>deploy/nginx/takemiko.com.conf</code></td>
+<td><code>server_name</code> ×4、証明書パス</td>
+<td><code>&lt;DOMAIN&gt;</code> / <code>www.&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>deploy/nginx/cms.takemiko.com.conf</code></td>
+<td><code>server_name</code> ×2、証明書パス</td>
+<td><code>cms.&lt;DOMAIN&gt;</code></td>
+</tr>
+<tr>
+<td><code>deploy/nginx/security-headers.conf</code></td>
+<td>CSPの <code>connect-src</code></td>
+<td><code>&lt;WORKER_URL&gt;</code></td>
+</tr>
+<tr>
+<td><code>deploy/fail2ban/filter.d/takemiko-cms.conf</code></td>
+<td><code>logpath</code> の由来</td>
+<td><code>cms.&lt;DOMAIN&gt;</code> のアクセスログ名</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-表h-セキュリティレビュー指摘コードの対応表" tabindex="-1">9. 表H: セキュリティレビュー指摘コードの対応表</h2>
+<p><code>deploy/systemd/takemiko-cms.service</code>、<code>deploy/nginx/*.conf</code>、<code>cms/config/{middlewares,plugins}.ts</code>、<code>worker/src/index.ts</code> 等のコメントに登場する識別子の一覧（2026-08-16のコードレビューで採番）。詳細な指摘文自体はリポジトリに含めていないため、実装箇所と一行要約のみをここに記録する。</p>
+<table>
+<thead>
+<tr>
+<th>コード</th>
+<th>一行要約</th>
+<th>主な実装箇所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SEC-01</td>
+<td>CMS由来URLの <code>javascript:</code>/<code>data:</code> スキームによる保存型XSS対策</td>
+<td><code>web/src/lib/url.ts</code>, <code>web/src/content.config.ts</code></td>
+</tr>
+<tr>
+<td>SEC-02</td>
+<td>Strapiログインの実パスは <code>/admin/login</code>（<code>/admin/auth/login</code> ではない）</td>
+<td><code>deploy/nginx/cms.takemiko.com.conf</code>, <code>deploy/fail2ban/filter.d/takemiko-cms.conf</code></td>
+</tr>
+<tr>
+<td>SEC-03</td>
+<td>CMS依存の既知脆弱性（ビルド時ツールに限定、本番非露出）</td>
+<td><code>.github/dependabot.yml</code></td>
+</tr>
+<tr>
+<td>SEC-04</td>
+<td>Strapi CORSの任意Origin許可（資格情報付き）を自ドメインへ制限</td>
+<td><code>cms/config/middlewares.ts</code></td>
+</tr>
+<tr>
+<td>SEC-05</td>
+<td>nginxの <code>add_header</code> 非継承バグによるセキュリティヘッダー欠落・CSP追加</td>
+<td><code>deploy/nginx/security-headers.conf</code></td>
+</tr>
+<tr>
+<td>SEC-06</td>
+<td>問い合わせWorkerの濫用対策（Turnstileのhostname/action検証・レート制限・サイズ上限）</td>
+<td><code>worker/src/index.ts</code></td>
+</tr>
+<tr>
+<td>SEC-07</td>
+<td>アップロード許可形式を <code>image/*</code> のみに縮小、未使用プラグイン削除</td>
+<td><code>cms/config/plugins.ts</code></td>
+</tr>
+<tr>
+<td>PRIV-01</td>
+<td>D1の個人情報に180日保持期限と自動削除</td>
+<td><code>worker/src/index.ts</code>（<code>scheduled()</code>）, <code>web/src/pages/privacy.astro</code></td>
+</tr>
+<tr>
+<td>REL-01</td>
+<td>通知メール送信失敗の検知・記録・再送</td>
+<td><code>worker/src/index.ts</code>（<code>deliver()</code>）</td>
+</tr>
+<tr>
+<td>OPS-01</td>
+<td>deployユーザーとCMS実行ユーザーの分離（<strong>未対応</strong>）</td>
+<td><code>OPERATIONS.md</code> §15「既知の課題」参照</td>
+</tr>
+<tr>
+<td>OPS-02</td>
+<td>systemdサンドボックス強化</td>
+<td><code>deploy/systemd/takemiko-cms.service</code></td>
+</tr>
+<tr>
+<td>OPS-03</td>
+<td>バックアップの暗号化・オフサイト化（<strong>未対応</strong>）</td>
+<td><code>OPERATIONS.md</code> §15「既知の課題」参照</td>
+</tr>
+<tr>
+<td>INFO-01</td>
+<td><code>server_tokens off</code>、Strapiの<code>poweredBy</code>ミドルウェア無効化</td>
+<td><code>deploy/nginx/*.conf</code>, <code>cms/config/middlewares.ts</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-用語集" tabindex="-1">10. 用語集</h2>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>経路A</td>
+<td>コード変更のデプロイ経路。ローカルで <code>pnpm release</code> → GitHub Release → Actions が配送（CIはビルドしない）</td>
+</tr>
+<tr>
+<td>経路B</td>
+<td>記事更新のデプロイ経路。Strapiの公開操作 → <code>repository_dispatch</code> → Actions がビルドから配送まで行う</td>
+</tr>
+<tr>
+<td><code>deploy</code> ユーザー</td>
+<td>VPS上でGitHub Actionsが使うSSHユーザー。sudoなし。<code>/var/www/takemiko</code> の所有者かつ <code>takemiko-cms.service</code> の実行ユーザー</td>
+</tr>
+<tr>
+<td>atomic deploy</td>
+<td><code>releases/&lt;sha&gt;-&lt;ts&gt;/</code> に配置してから symlink を <code>current</code> に張り替える方式。配信中に「一部だけ新しい」状態を作らない</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+</div>
+</body>
+</html>

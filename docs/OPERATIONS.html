@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>運用ガイド — 日々のメンテナンス — たけるのみこと Official Site</title>
+<style>
+
+:root {
+  color-scheme: light dark;
+  --bg: #fdf8f6;
+  --surface: #ffffff;
+  --surface-muted: #f7eeea;
+  --border: #eedfd9;
+  --text: #241b1a;
+  --text-muted: #6b5a56;
+  --primary: #c01e2a;
+  --accent: #00708a;
+  --code-bg: #241b1a;
+  --code-text: #f7eeea;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1413;
+    --surface: #241b1a;
+    --surface-muted: #2e2321;
+    --border: #4a3a37;
+    --text: #f2e9e6;
+    --text-muted: #c2b0ac;
+    --primary: #ef7b83;
+    --accent: #6fc7dd;
+    --code-bg: #100c0b;
+    --code-text: #f2e9e6;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, "Noto Sans JP", system-ui, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem;
+}
+.toc {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+.toc-title { margin: 0 0 0.5rem; font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0.15rem 0; }
+.toc .toc-h3 { padding-left: 1rem; opacity: 0.85; }
+.toc a { color: var(--text-muted); text-decoration: none; }
+.toc a:hover { color: var(--primary); text-decoration: underline; }
+.content { min-width: 0; max-width: 860px; }
+h1, h2, h3, h4 { line-height: 1.4; scroll-margin-top: 1.5rem; }
+h1 { font-size: 1.9rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+h3 { font-size: 1.1rem; color: var(--accent); }
+p { margin: 0.9em 0; }
+a { color: var(--accent); }
+code {
+  background: var(--surface-muted);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1.2em 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+table thead { display: table-header-group; }
+table tbody { display: table-row-group; }
+th, td { border: 1px solid var(--border); padding: 0.5em 0.75em; text-align: left; vertical-align: top; }
+th { background: var(--surface-muted); }
+blockquote { margin: 1em 0; padding: 0.25em 1em; border-left: 3px solid var(--primary); background: var(--surface-muted); border-radius: 0 6px 6px 0; }
+ul.contains-task-list { list-style: none; padding-left: 0.25em; }
+.task-list-item { display: flex; align-items: flex-start; gap: 0.5em; margin: 0.35em 0; }
+.task-list-item input[type="checkbox"] { margin-top: 0.35em; width: 1.05em; height: 1.05em; }
+hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .toc { position: static; max-height: none; }
+}
+@media print {
+  .toc { display: none; }
+  .layout { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="目次"><p class="toc-title">目次</p><ul><li class="toc-h2"><a href="#0-困ったときのショートカット">0. 困ったときのショートカット</a></li>
+<li class="toc-h2"><a href="#1-チートシート">1. チートシート</a></li>
+<li class="toc-h2"><a href="#2-定期タスクカレンダー">2. 定期タスクカレンダー</a></li>
+<li class="toc-h3"><a href="#自動何もしなくてよい">自動（何もしなくてよい）</a></li>
+<li class="toc-h3"><a href="#人手チェックボックスで管理">人手（チェックボックスで管理）</a></li>
+<li class="toc-h2"><a href="#3-コンテンツ運用">3. コンテンツ運用</a></li>
+<li class="toc-h2"><a href="#4-コードのデプロイ">4. コードのデプロイ</a></li>
+<li class="toc-h3"><a href="#41-web経路a">4.1 web（経路A）</a></li>
+<li class="toc-h3"><a href="#42-cmsstrapiコード">4.2 cms（Strapiコード）</a></li>
+<li class="toc-h3"><a href="#43-worker">4.3 worker</a></li>
+<li class="toc-h3"><a href="#44-ロールバック">4.4 ロールバック</a></li>
+<li class="toc-h2"><a href="#5-サーバ設定ファイルの変更反映">5. サーバ設定ファイルの変更反映</a></li>
+<li class="toc-h2"><a href="#6-d1マイグレーション運用汎用手順">6. D1マイグレーション運用（汎用手順）</a></li>
+<li class="toc-h2"><a href="#7-シークレットのローテーション">7. シークレットのローテーション</a></li>
+<li class="toc-h2"><a href="#8-バックアップと復元">8. バックアップと復元</a></li>
+<li class="toc-h3"><a href="#81-生成の確認">8.1 生成の確認</a></li>
+<li class="toc-h3"><a href="#82-復元リハーサル本番に触れない">8.2 復元リハーサル（本番に触れない）</a></li>
+<li class="toc-h3"><a href="#83-実際の復元">8.3 実際の復元</a></li>
+<li class="toc-h3"><a href="#84-ログのローテーション">8.4 ログのローテーション</a></li>
+<li class="toc-h3"><a href="#85-既知の限界">8.5 既知の限界</a></li>
+<li class="toc-h2"><a href="#9-tls証明書">9. TLS証明書</a></li>
+<li class="toc-h2"><a href="#10-セキュリティ運用">10. セキュリティ運用</a></li>
+<li class="toc-h3"><a href="#fail2ban">fail2ban</a></li>
+<li class="toc-h3"><a href="#その他">その他</a></li>
+<li class="toc-h3"><a href="#dependabot-prの処理">Dependabot PRの処理</a></li>
+<li class="toc-h2"><a href="#11-監視ログ">11. 監視・ログ</a></li>
+<li class="toc-h2"><a href="#12-外形確認">12. 外形確認</a></li>
+<li class="toc-h2"><a href="#13-障害対応プレイブック">13. 障害対応プレイブック</a></li>
+<li class="toc-h2"><a href="#14-変更時に一緒に直すもの連動表">14. 変更時に一緒に直すもの（連動表）</a></li>
+<li class="toc-h2"><a href="#15-既知の課題">15. 既知の課題</a></li></ul></nav>
+<main class="content">
+<h1 id="運用ガイド-日々のメンテナンス" tabindex="-1">運用ガイド — 日々のメンテナンス</h1>
+<p>すでに動いている本番環境を対象にした、繰り返し行う作業のためのガイドです。ゼロからの構築は <a href="./REBUILD.html"><code>REBUILD.md</code></a>、シークレット・環境変数の値は <a href="./REFERENCE.html"><code>REFERENCE.md</code></a> を参照してください。</p>
+<p>記法規約は <a href="./REBUILD.html#0-%E3%81%93%E3%81%AE%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"><code>REBUILD.md</code> §0</a> と共通です（<code>[ローカル/PowerShell]</code> 等のラベル、プレースホルダ）。</p>
+<h2 id="0-困ったときのショートカット" tabindex="-1">0. 困ったときのショートカット</h2>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>直行先</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>サイトが502/503を返す</td>
+<td>§13 障害対応プレイブック</td>
+</tr>
+<tr>
+<td>CMSにログインできない・落ちている</td>
+<td>§13</td>
+</tr>
+<tr>
+<td>お問い合わせフォームが送れない</td>
+<td>§12 外形確認 → §13</td>
+</tr>
+<tr>
+<td>GitHub Actionsが赤い</td>
+<td>§4 コードのデプロイ</td>
+</tr>
+<tr>
+<td>証明書が切れそう/切れた</td>
+<td>§9 TLS証明書</td>
+</tr>
+<tr>
+<td>ディスクが逼迫している</td>
+<td>§13</td>
+</tr>
+<tr>
+<td>何かのシークレットを漏らしたかもしれない</td>
+<td>§7 シークレットのローテーション</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-チートシート" tabindex="-1">1. チートシート</h2>
+<p>日常の8割はこの表で済みます。</p>
+<table>
+<thead>
+<tr>
+<th>やりたいこと</th>
+<th>コマンド</th>
+<th>実行場所</th>
+<th>危険度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コード変更をデプロイ</td>
+<td><code>pnpm release</code>（<code>web/</code>で）</td>
+<td>ローカル</td>
+<td>低</td>
+</tr>
+<tr>
+<td>CMSコード変更を反映</td>
+<td>§4.2参照</td>
+<td>VPS</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Worker変更をデプロイ</td>
+<td><code>npm test &amp;&amp; npx wrangler deploy</code>（<code>worker/</code>で）</td>
+<td>ローカル</td>
+<td>低</td>
+</tr>
+<tr>
+<td>nginx設定を反映</td>
+<td>§5参照</td>
+<td>ローカル→VPS</td>
+<td>中</td>
+</tr>
+<tr>
+<td>ログを見る（CMS）</td>
+<td><code>journalctl -u takemiko-cms -n 50 --no-pager</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+<tr>
+<td>サービス状態を見る</td>
+<td><code>sudo systemctl status takemiko-cms</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+<tr>
+<td>バックアップを手動実行</td>
+<td><code>sudo /usr/local/sbin/backup-cms.sh</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+<tr>
+<td>fail2banの状況を見る</td>
+<td><code>sudo fail2ban-client status takemiko-cms</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+<tr>
+<td>誤banを解除</td>
+<td><code>sudo fail2ban-client set takemiko-cms unbanip &lt;IP&gt;</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+<tr>
+<td>証明書の期限を見る</td>
+<td><code>sudo certbot certificates</code></td>
+<td>VPS</td>
+<td>低</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-定期タスクカレンダー" tabindex="-1">2. 定期タスクカレンダー</h2>
+<h3 id="自動何もしなくてよい" tabindex="-1">自動（何もしなくてよい）</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 毎日 JST 03:00: VPSのバックアップcron（<code>/etc/cron.d/takemiko-backup</code>）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 毎日 UTC 18:00: Workerのcron（データ保持期限切れ削除・通知メール再送、<a href="./REFERENCE.html"><code>REFERENCE.md</code> 表D</a>）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 毎日 JST 00:10: 予約公開取りこぼし保険cron（<code>.github/workflows/deploy-content.yml</code>）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 証明書の自動更新（<code>certbot.timer</code>、期限30日前から試行）</label></li>
+</ul>
+<h3 id="人手チェックボックスで管理" tabindex="-1">人手（チェックボックスで管理）</h3>
+<p><strong>毎週</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> Dependabotが作ったPRを確認する（§10）</label></li>
+</ul>
+<p><strong>毎月</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>sudo certbot certificates</code> で有効期限を目視確認</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>/var/backups/takemiko/</code> の世代数とサイズを確認</label></li>
+</ul>
+<p><strong>四半期</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> 復元リハーサルを実施（§8.2）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>sudo certbot renew --dry-run</code> を実施</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> <code>npm audit</code> / <code>pnpm audit</code> を3サブプロジェクトで実施し、新規のHigh/Criticalが無いか確認</label></li>
+</ul>
+<p><strong>年次</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> deployのSSH鍵をローテーション（§7）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> GitHub PAT（読み取り専用・書き込み用の2つ）をローテーション（§7）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> Workerのシークレット3つをローテーション（§7）</label></li>
+<li class="task-list-item"><label><input class="task-list-item-checkbox" disabled="" type="checkbox"> DBパスワードをローテーション（§7）</label></li>
+</ul>
+<hr>
+<h2 id="3-コンテンツ運用" tabindex="-1">3. コンテンツ運用</h2>
+<p>Strapi管理画面で記事・制作実績・SNSリンク・グッズリンクを公開/更新/非公開/削除すると、lifecycle subscriber（<code>cms/src/index.ts</code>）が30秒デバウンスで <code>repository_dispatch</code> を送り、経路B（<code>.github/workflows/deploy-content.yml</code>）が自動でビルド・配送する。</p>
+<p>予約公開は、Strapi側の予約公開機能に加えて <code>deploy-content.yml</code> の日次cron（JST 00:10）が保険として再ビルドする（Strapiの予約公開自体はrepository_dispatchを飛ばさないため）。</p>
+<p><strong>画像アップロード時は必ずAlt属性を入力する</strong>（SEO・アクセシビリティ。Geminiレビューでの指摘）。</p>
+<p>反映されない場合の切り分け:</p>
+<ol>
+<li>GitHub Actionsの <code>Deploy (Content / 記事更新)</code> が起動しているか（Actionsタブ）</li>
+<li>起動していない → <code>journalctl -u takemiko-cms -n 50 --no-pager</code> で <code>repository_dispatch</code> 送信のログ・エラーを確認、<code>/etc/takemiko-cms.env</code> の <code>GH_TOKEN</code>/<code>GH_REPO</code> を確認</li>
+<li>起動したが失敗している → Actionsのログでビルドエラーを確認</li>
+</ol>
+<hr>
+<h2 id="4-コードのデプロイ" tabindex="-1">4. コードのデプロイ</h2>
+<h3 id="41-web経路a" tabindex="-1">4.1 web（経路A）</h3>
+<pre><code class="language-powershell">cd web
+pnpm release
+</code></pre>
+<p><code>release.sh</code> の3ガード: (1) 作業ツリーが汚れていたら中止 (2) ローカルHEADが <code>origin/main</code> と不一致なら中止 (3) ビルド成果物のサニティチェック。これらは経路Bが後から再ビルドしても同じ結果になることを保証するための仕組みなので、<strong>ガードで止まったときは無視せず原因を解消する</strong>（<code>git status</code>/<code>git push</code> を確認）。</p>
+<h3 id="42-cmsstrapiコード" tabindex="-1">4.2 cms（Strapiコード）</h3>
+<p><code>cms/</code> のコード変更（lifecycle subscriber・Content-Typeスキーマ・middlewares.ts等）は経路A/Bどちらの自動デプロイの対象<strong>外</strong>。手動で反映する。</p>
+<p><code>[VPS/bash: deploy]</code>:</p>
+<pre><code class="language-bash">sudo su - deploy
+cd /opt/takemiko-cms-src
+git pull origin main
+cd cms
+npm ci
+npm run build
+exit
+</code></pre>
+<p><code>[VPS/bash: sudoユーザー]</code>（<strong>deployにはsudoが無いので、必ず<code>exit</code>してから実行する</strong>）:</p>
+<pre><code class="language-bash">sudo systemctl restart takemiko-cms
+journalctl -u takemiko-cms -n 30 --no-pager
+</code></pre>
+<p><code>Strapi started successfully</code> を確認する。Content-Type Builderでスキーマを変更した場合は、ローカルで先に動作確認してから（マイグレーションファイルが自動生成されるので、それをcommitしてから）反映する。</p>
+<h3 id="43-worker" tabindex="-1">4.3 worker</h3>
+<pre><code class="language-powershell">cd worker
+npm test
+npx wrangler deploy
+</code></pre>
+<p>新しいD1マイグレーションを含む変更の場合は、デプロイ前に §6 の手順でマイグレーションを適用しておく。</p>
+<h3 id="44-ロールバック" tabindex="-1">4.4 ロールバック</h3>
+<table>
+<thead>
+<tr>
+<th>対象</th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>web（静的サイト）</td>
+<td>VPS上で <code>ls -1dt /var/www/takemiko/releases/*/</code> から前の世代を選び、<code>sudo ln -sfn &lt;前の世代のパス&gt; /var/www/takemiko/current</code>（直近5世代が残っている）</td>
+</tr>
+<tr>
+<td>cms</td>
+<td>前のコミットSHAで <code>git checkout &lt;SHA&gt;</code> してから4.2の手順を再実行</td>
+</tr>
+<tr>
+<td>worker</td>
+<td><code>npx wrangler rollback</code> で直前のデプロイに戻す、またはD1のスキーマ変更を伴う場合は手動で切り戻す</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-サーバ設定ファイルの変更反映" tabindex="-1">5. サーバ設定ファイルの変更反映</h2>
+<p>nginx・systemd・fail2ban・バックアップスクリプトはすべて同じパターンで反映する。</p>
+<table>
+<thead>
+<tr>
+<th>手順</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>リポジトリの <code>deploy/</code> 配下を編集する</td>
+</tr>
+<tr>
+<td>2</td>
+<td>commit・push する</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>[ローカル/PowerShell]</code> で <code>scp -i &lt;SSH_KEY_PATH&gt; -P 22 deploy\&lt;対象ファイル&gt; deploy@&lt;VPS_HOST&gt;:/tmp/&lt;ファイル名&gt;</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>[VPS/bash: sudoユーザー]</code> で <code>sudo mv /tmp/&lt;ファイル名&gt; &lt;配置先&gt;</code>（配置先は<a href="./REFERENCE.html#7-%E8%A1%A8f-vps-%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E9%85%8D%E7%BD%AE%E3%83%9E%E3%83%83%E3%83%97"><code>REFERENCE.md</code> 表F</a>参照）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>種別ごとの検証・反映コマンドを実行する（下表）</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>種別</th>
+<th>検証</th>
+<th>反映</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nginx</td>
+<td><code>sudo nginx -t</code></td>
+<td><code>sudo systemctl reload nginx</code></td>
+</tr>
+<tr>
+<td>systemd</td>
+<td>（なし）</td>
+<td><code>sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart takemiko-cms</code></td>
+</tr>
+<tr>
+<td>fail2ban</td>
+<td>（なし）</td>
+<td><code>sudo systemctl restart fail2ban</code> → <code>sudo fail2ban-client status takemiko-cms</code> で確認</td>
+</tr>
+<tr>
+<td><a href="http://backup-cms.sh">backup-cms.sh</a></td>
+<td>（なし）</td>
+<td><code>sudo chown root:root</code> + <code>sudo chmod 700</code> を忘れずに</td>
+</tr>
+</tbody>
+</table>
+<p><code>nginx -t</code> は必ず <code>reload</code>/<code>restart</code> の<strong>前</strong>に実行する。エラーが出た状態でreloadすると、直前の設定のまま古いプロセスが動き続ける（サイトは落ちないが変更も反映されない）ので、<code>nginx -t</code> の失敗を放置しない。</p>
+<hr>
+<h2 id="6-d1マイグレーション運用汎用手順" tabindex="-1">6. D1マイグレーション運用（汎用手順）</h2>
+<p>新しいテーブル・カラムが必要になったとき:</p>
+<ol>
+<li><code>worker/migrations/NNNN_snake_case.sql</code> を連番で作成する（例: <code>0003_...</code>）。<code>CREATE TABLE IF NOT EXISTS</code> / <code>ALTER TABLE ... ADD COLUMN</code>（既存カラムがあってもエラーにならない書き方）を使い、冪等に書く</li>
+<li><strong><code>worker/schema.sql</code> にも同じ変更を反映する</strong>（<code>schema.sql</code> は「今すぐ新規構築したら何が出来るか」を表す完成形。新規構築時はこちらしか使わないため、<code>migrations/</code> だけ増やすとズレる）</li>
+<li>ローカルで検証: <code>npx wrangler d1 execute takemiko-contact --local --file=migrations/NNNN_*.sql</code></li>
+<li>本番に適用: <code>npx wrangler d1 execute takemiko-contact --remote --file=migrations/NNNN_*.sql</code></li>
+<li><code>worker/src/index.ts</code> を新しいスキーマに対応させてからデプロイする（<strong>適用とデプロイの順序に注意</strong>: 新カラムを参照するコードを先にデプロイすると、マイグレーション未適用の本番D1に対してエラーになる）</li>
+<li><a href="./REFERENCE.html#6-%E8%A1%A8e-d1-%E3%82%B9%E3%82%AD%E3%83%BC%E3%83%9E%E5%8F%B0%E5%B8%B3worker"><code>REFERENCE.md</code> 表E</a> に追記する（ここへの追記をもって完了とする）</li>
+</ol>
+<p>失敗時の戻し方: D1はスキーマ変更のトランザクショナルなロールバック機能を持たないため、<code>ALTER TABLE ... DROP COLUMN</code>（対応していればSQLiteの制約に注意）または新しいテーブルを作って移行する。破壊的な変更をする前には <code>wrangler d1 export</code> でバックアップを取る。</p>
+<hr>
+<h2 id="7-シークレットのローテーション" tabindex="-1">7. シークレットのローテーション</h2>
+<table>
+<thead>
+<tr>
+<th>対象</th>
+<th>手順</th>
+<th>ローテ後の検証</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Worker secrets（TURNSTILE_SECRET / RESEND_API_KEY / CONTACT_NOTIFY_EMAIL）</td>
+<td><code>npx wrangler secret put &lt;NAME&gt;</code> で上書き</td>
+<td><code>/contact/</code> からテスト送信</td>
+</tr>
+<tr>
+<td>Strapi API Token（read-only）</td>
+<td>管理画面で新規発行 → GitHub Secretsと<code>web/.env.production</code>を更新 → 旧トークンを失効</td>
+<td><code>pnpm release</code> を実行しビルドが成功するか</td>
+</tr>
+<tr>
+<td>Strapi Transfer Token</td>
+<td>使う直前に都度発行、使用後は失効させる（常設しない）</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GitHub PAT（Contents: Read-only、<code>/opt/takemiko-cms-src</code>のclone用）</td>
+<td>新規発行 → VPS上で <code>git remote set-url origin https://&lt;user&gt;:&lt;新PAT&gt;@github.com/...</code></td>
+<td><code>git pull</code> が成功するか</td>
+</tr>
+<tr>
+<td>GitHub PAT（Contents: Read and write、<code>GH_TOKEN</code>用）</td>
+<td>新規発行 → <code>/etc/takemiko-cms.env</code> の <code>GH_TOKEN</code> を更新 → <code>sudo systemctl restart takemiko-cms</code></td>
+<td>記事を1本公開し経路Bが起動するか</td>
+</tr>
+<tr>
+<td>deployのSSH鍵</td>
+<td>1. 新しい鍵ペアを生成 2. VPSの <code>authorized_keys</code> に<strong>新しい公開鍵を追記</strong>（旧鍵は残したまま） 3. GitHub Secretの<code>SSH_PRIVATE_KEY</code>を新しい秘密鍵に更新 4. <code>pnpm release</code>でテストデプロイ 5. 成功を確認してから<code>authorized_keys</code>の旧鍵を削除</td>
+<td>テストデプロイの成功</td>
+</tr>
+<tr>
+<td>DBパスワード（<code>strapi</code>ロール）</td>
+<td><code>ALTER USER strapi WITH PASSWORD '新パスワード';</code> → <code>/etc/takemiko-cms.env</code>の<code>DATABASE_PASSWORD</code>を更新 → <code>sudo systemctl restart takemiko-cms</code></td>
+<td>ログイン・記事一覧表示</td>
+</tr>
+<tr>
+<td>Turnstile Secret Key / Resend APIキー</td>
+<td>各ダッシュボードで再発行 → Worker secretsを更新（上記1行目）</td>
+<td>テスト送信</td>
+</tr>
+</tbody>
+</table>
+<p><strong>鍵のローテーションは新→旧の順で切り替える</strong>（旧を先に消すとロックアウトの危険がある）。</p>
+<hr>
+<h2 id="8-バックアップと復元" tabindex="-1">8. バックアップと復元</h2>
+<h3 id="81-生成の確認" tabindex="-1">8.1 生成の確認</h3>
+<pre><code class="language-bash">sudo ls -la /var/backups/takemiko/
+cat /var/log/takemiko-backup.log
+</code></pre>
+<p><code>db-&lt;日時&gt;.sql.gz</code> と <code>uploads-&lt;日時&gt;.tar.gz</code> が直近14世代分あることを確認する。</p>
+<h3 id="82-復元リハーサル本番に触れない" tabindex="-1">8.2 復元リハーサル（本番に触れない）</h3>
+<pre><code class="language-bash">sudo -u postgres createdb takemiko_cms_restore_test
+sudo gunzip -c /var/backups/takemiko/db-&lt;日時&gt;.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_test
+sudo -u postgres psql -d takemiko_cms_restore_test -c &quot;SELECT count(*) FROM articles;&quot;
+sudo -u postgres dropdb takemiko_cms_restore_test
+</code></pre>
+<p>アップロード側:</p>
+<pre><code class="language-bash">mkdir -p /tmp/uploads-restore-test
+sudo tar -xzf /var/backups/takemiko/uploads-&lt;日時&gt;.tar.gz -C /tmp/uploads-restore-test
+sudo chown -R &quot;$USER&quot; /tmp/uploads-restore-test
+ls /tmp/uploads-restore-test/uploads
+rm -rf /tmp/uploads-restore-test
+</code></pre>
+<h3 id="83-実際の復元" tabindex="-1">8.3 実際の復元</h3>
+<p>DB（<strong>サービスを止めてから</strong>）:</p>
+<pre><code class="language-bash">sudo systemctl stop takemiko-cms
+sudo -u postgres dropdb takemiko_cms
+sudo -u postgres createdb takemiko_cms
+sudo gunzip -c /var/backups/takemiko/db-&lt;日時&gt;.sql.gz | sudo -u postgres psql -d takemiko_cms
+sudo systemctl start takemiko-cms
+</code></pre>
+<p>アップロード:</p>
+<pre><code class="language-bash">sudo systemctl stop takemiko-cms
+sudo tar -xzf /var/backups/takemiko/uploads-&lt;日時&gt;.tar.gz -C /opt/takemiko-cms/public/
+sudo systemctl start takemiko-cms
+</code></pre>
+<h3 id="84-ログのローテーション" tabindex="-1">8.4 ログのローテーション</h3>
+<p><code>/etc/logrotate.d/takemiko-backup</code>（<a href="./REBUILD.html#11-%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97"><code>REBUILD.md</code> §11</a>で設置済み）が週次でローテートする。手動で確認する場合:</p>
+<pre><code class="language-bash">sudo logrotate -d /etc/logrotate.d/takemiko-backup   # ドライラン
+</code></pre>
+<h3 id="85-既知の限界" tabindex="-1">8.5 既知の限界</h3>
+<p>バックアップは同一VPS内にのみ保存され、暗号化されていない。ディスク障害やVPSアカウント侵害時には本体と同時に失う可能性がある。オフサイト保管・暗号化は §15「既知の課題」参照。</p>
+<hr>
+<h2 id="9-tls証明書" tabindex="-1">9. TLS証明書</h2>
+<p>証明書は <code>certonly --webroot</code> で取得しており、更新は <code>certbot.timer</code>（systemdタイマー）が自動で行う。</p>
+<p>定期確認:</p>
+<pre><code class="language-bash">sudo certbot certificates
+sudo systemctl status certbot.timer
+sudo certbot renew --dry-run
+</code></pre>
+<p><code>sudo certbot renew --dry-run</code> が失敗する場合:</p>
+<ul>
+<li><code>/var/www/letsencrypt</code> が存在するか、nginxの <code>location ^~ /.well-known/acme-challenge/</code> がそこを指しているか確認</li>
+<li>80番ポートが実際に外部から到達可能か（<code>curl -I http://&lt;DOMAIN&gt;/.well-known/acme-challenge/test</code> を外部から）</li>
+<li>DNSが変更されていないか</li>
+</ul>
+<hr>
+<h2 id="10-セキュリティ運用" tabindex="-1">10. セキュリティ運用</h2>
+<h3 id="fail2ban" tabindex="-1">fail2ban</h3>
+<pre><code class="language-bash">sudo fail2ban-client status                    # ジェイル一覧
+sudo fail2ban-client status takemiko-cms        # banされたIP一覧
+sudo fail2ban-client status sshd
+sudo fail2ban-client set takemiko-cms unbanip &lt;IP&gt;   # 誤banの解除
+</code></pre>
+<p>自分自身を誤banした場合、VPSプロバイダのコンソール（ブラウザ経由のVNC/シリアルコンソール、SSHを経由しない）からログインしてunbanする。</p>
+<h3 id="その他" tabindex="-1">その他</h3>
+<pre><code class="language-bash">sudo ufw status
+sudo tail -f /var/log/nginx/cms.takemiko.com.access.log   # CMSアクセスログ
+cat /etc/apt/apt.conf.d/20auto-upgrades                    # unattended-upgradesの確認
+</code></pre>
+<h3 id="dependabot-prの処理" tabindex="-1">Dependabot PRの処理</h3>
+<p>週次で作られるPRは、CI（<code>.github/workflows/ci.yml</code>）が自動でtypecheck/testを走らせる。<strong>Strapiのメジャーバージョン更新PRは自動化対象外</strong>（<code>.github/dependabot.yml</code> で除外設定済み）。CIが通ったマイナー/パッチ更新はレビューの上マージしてよい。</p>
+<hr>
+<h2 id="11-監視ログ" tabindex="-1">11. 監視・ログ</h2>
+<table>
+<thead>
+<tr>
+<th>対象</th>
+<th>コマンド</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CMSサービス状態</td>
+<td><code>sudo systemctl status takemiko-cms</code></td>
+</tr>
+<tr>
+<td>CMSログ</td>
+<td><code>journalctl -u takemiko-cms -n 100 --no-pager</code> / <code>journalctl -u takemiko-cms -f</code>（追跡）</td>
+</tr>
+<tr>
+<td>nginxアクセスログ</td>
+<td><code>sudo tail -f /var/log/nginx/cms.takemiko.com.access.log</code></td>
+</tr>
+<tr>
+<td>nginxエラーログ</td>
+<td><code>sudo tail -f /var/log/nginx/error.log</code></td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td><code>sudo systemctl status postgresql</code></td>
+</tr>
+<tr>
+<td>バックアップログ</td>
+<td><code>cat /var/log/takemiko-backup.log</code></td>
+</tr>
+<tr>
+<td>Workerのリアルタイムログ</td>
+<td><code>cd worker &amp;&amp; npx wrangler tail</code></td>
+</tr>
+<tr>
+<td>Workerのcron実行確認</td>
+<td><code>npx wrangler tail</code> を実行した状態でcron発火時刻（UTC 18:00）を待つ、またはCloudflareダッシュボード → Workers → 対象Worker → Triggers → Cron Triggersの実行履歴</td>
+</tr>
+<tr>
+<td>D1のレート制限テーブルが減っているか</td>
+<td><code>npx wrangler d1 execute takemiko-contact --remote --command &quot;SELECT COUNT(*) FROM request_attempts;&quot;</code> を日をまたいで比較</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-外形確認" tabindex="-1">12. 外形確認</h2>
+<p>大きな変更の後にまとめて実行する（<a href="./REBUILD.html#13-%E5%8F%97%E3%81%91%E5%85%A5%E3%82%8C%E6%A4%9C%E8%A8%BC"><code>REBUILD.md</code> §13</a>の縮小版・日常点検用）。</p>
+<pre><code class="language-powershell">curl.exe -sI https://&lt;DOMAIN&gt;/
+curl.exe -sI https://&lt;DOMAIN&gt;/no-such-page/
+curl.exe -sI https://cms.&lt;DOMAIN&gt;/admin
+curl.exe -sI -H &quot;Origin: https://evil.example.com&quot; https://cms.&lt;DOMAIN&gt;/api/articles
+
+# フォームの異常系
+curl.exe -s -o NUL -w &quot;%{http_code}`n&quot; -X POST https://&lt;WORKER_URL&gt; -H &quot;Content-Type: application/json&quot; -H &quot;Origin: https://&lt;DOMAIN&gt;&quot; -d '{&quot;name&quot;:&quot;t&quot;,&quot;email&quot;:&quot;t@example.com&quot;,&quot;subject&quot;:&quot;t&quot;,&quot;message&quot;:&quot;t&quot;}'
+curl.exe -s -o NUL -w &quot;%{http_code}`n&quot; -X POST https://&lt;WORKER_URL&gt; -H &quot;Content-Type: application/json&quot; -H &quot;Origin: https://evil.example.com&quot; -d '{&quot;name&quot;:&quot;t&quot;,&quot;email&quot;:&quot;t@example.com&quot;,&quot;subject&quot;:&quot;t&quot;,&quot;message&quot;:&quot;t&quot;,&quot;token&quot;:&quot;dummy&quot;}'
+</code></pre>
+<p>期待値は <a href="./REBUILD.html#13-%E5%8F%97%E3%81%91%E5%85%A5%E3%82%8C%E6%A4%9C%E8%A8%BC"><code>REBUILD.md</code> §13</a> の表を参照。ビルド設定や環境変数（<code>STRAPI_URL</code>等）を変更したときは、経路A/B一致検証（<code>pnpm release</code> → 経路Bを<code>workflow_dispatch</code>で手動実行 → 目視比較）も実施する。</p>
+<hr>
+<h2 id="13-障害対応プレイブック" tabindex="-1">13. 障害対応プレイブック</h2>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>初動</th>
+<th>切り分け</th>
+<th>復旧</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>サイトが502/503</td>
+<td><code>sudo systemctl status nginx</code></td>
+<td>nginxのエラーログ確認、<code>sudo nginx -t</code></td>
+<td><code>sudo systemctl restart nginx</code></td>
+</tr>
+<tr>
+<td>CMSが落ちた</td>
+<td><code>sudo systemctl status takemiko-cms</code></td>
+<td><code>journalctl -u takemiko-cms -n 100</code> でエラー内容確認</td>
+<td><code>sudo systemctl restart takemiko-cms</code>。DBが原因なら<code>sudo systemctl status postgresql</code>も確認</td>
+</tr>
+<tr>
+<td>フォームが送れない</td>
+<td><code>npx wrangler tail</code> でリアルタイムログ確認</td>
+<td>§12のcurlチェックで400/403/429のどれが返るか特定</td>
+<td>シークレットの再登録（§7）、CSPの<code>connect-src</code>確認</td>
+</tr>
+<tr>
+<td>Actionsが赤い</td>
+<td>Actionsタブでログ確認</td>
+<td>ビルドエラーか、rsync（SSH）エラーか</td>
+<td>ビルドエラー→コード修正。SSHエラー→<code>SSH_KNOWN_HOSTS</code>更新</td>
+</tr>
+<tr>
+<td>証明書切れ</td>
+<td><code>sudo certbot certificates</code></td>
+<td>§9のトラブルシュートを実施</td>
+<td>緊急時は<code>REBUILD.md §7.3-7.4</code>の手順で再取得</td>
+</tr>
+<tr>
+<td>ディスク満杯</td>
+<td><code>df -h</code></td>
+<td><code>du -sh /var/backups/takemiko/* /opt/takemiko-cms/public/uploads</code> 等で大きいものを特定</td>
+<td>古いバックアップ世代を手動削除、<code>/var/www/takemiko/releases</code>の世代数確認（自動で5世代保持のはず）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="14-変更時に一緒に直すもの連動表" tabindex="-1">14. 変更時に一緒に直すもの（連動表）</h2>
+<table>
+<thead>
+<tr>
+<th>変更</th>
+<th>連動して直す必要があるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ドメイン変更</td>
+<td><a href="./REFERENCE.html#8-%E8%A1%A8g-%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3url%E3%81%8C%E3%83%8F%E3%83%BC%E3%83%89%E3%82%B3%E3%83%BC%E3%83%89%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B%E7%AE%87%E6%89%80"><code>REFERENCE.md</code> 表G</a> の全箇所</td>
+</tr>
+<tr>
+<td>Worker URL変更</td>
+<td><code>web/.env</code>・<code>.env.production</code>・GitHub Secrets 2件・<code>security-headers.conf</code>のCSP <code>connect-src</code></td>
+</tr>
+<tr>
+<td>CSP変更</td>
+<td><code>deploy/nginx/security-headers.conf</code> → 配置（§5）→ ブラウザのコンソールで実際にブロックされていないか確認</td>
+</tr>
+<tr>
+<td>CMS CORS origin変更</td>
+<td><code>cms/config/middlewares.ts</code> → §4.2の手順でデプロイ</td>
+</tr>
+<tr>
+<td><code>trailingSlash</code> の変更（astro.config.mjs）</td>
+<td>nginxの <code>try_files</code> パターン、sitemap、既存の外部リンク</td>
+</tr>
+<tr>
+<td><code>DEPLOY_PATH</code> の変更</td>
+<td>GitHub Secret、<code>.github/actions/deploy-dist/action.yml</code> の前提、VPS側のディレクトリ実体</td>
+</tr>
+<tr>
+<td>fail2banの <code>logpath</code> 変更</td>
+<td><code>deploy/fail2ban/jail.d/takemiko-cms.local</code> と nginx側の <code>access_log</code> ディレクティブを揃える</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="15-既知の課題" tabindex="-1">15. 既知の課題</h2>
+<ul>
+<li><strong>deployユーザーとCMS実行ユーザーが同一</strong>: GitHub Actionsが握る静的サイト配送用のSSH鍵（<code>deploy</code>ユーザー）と、Strapiプロセスを実行するユーザーが同じ<code>deploy</code>になっている。デプロイ鍵が侵害された場合、静的ファイルの改ざんに留まらずCMSの実行コードまで書き換えられる状態。専用の実行ユーザー（例: <code>strapi</code>）へ分離し、<code>/opt/takemiko-cms</code>の所有権と<code>takemiko-cms.service</code>の<code>User=</code>を切り替えることで解消できるが、稼働中のVPSでのユーザー切り分け作業を要するため未対応（<a href="./REFERENCE.html#9-%E8%A1%A8h-%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E6%8C%87%E6%91%98%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E5%AF%BE%E5%BF%9C%E8%A1%A8"><code>REFERENCE.md</code> 表H</a> OPS-01）。</li>
+<li><strong>バックアップが同一VPS内・非暗号化</strong>: <code>deploy/backup/backup-cms.sh</code> はVPS内の<code>/var/backups/takemiko/</code>にのみ保存する。ディスク障害やVPSアカウント侵害時に本体と同時に失うリスクがある。オフサイト保管（S3/rclone等）と保存時の暗号化を将来的に追加したい（OPS-01H OPS-03）。</li>
+<li><strong>Node.jsのバージョン差</strong>: ローカル・GitHub Actionsは24系（<code>.nvmrc</code>）、VPSはUbuntu標準の22系。<code>cms</code>の<code>engines</code>は<code>&gt;=20 &lt;=26</code>を満たすため実害は無いが、意図的な差として認識しておく。</li>
+<li><strong><code>cms.takemiko.com</code> vhostにCSPが無い</strong>: <code>deploy/nginx/security-headers.conf</code>は<code>takemiko.com</code>（サイト本体）のみに適用しており、CMS管理画面側はStrapi自身の<code>strapi::security</code>ミドルウェアが返すCSPに任せている（管理画面はinline script/evalを要するため、サイト本体と同じ厳格なCSPを被せると管理画面自体が壊れる）。意図的な設計判断。</li>
+<li><strong>バックアップの整合性検証は手動</strong>: 世代保持のみで、自動的な整合性チェック（例: 復元して行数を比較しSlack通知する等）は無い。§2の四半期タスクで人手により検証する。</li>
+</ul>
+
+</main>
+</div>
+</body>
+</html>
