@@ -53,7 +53,7 @@ sudo nano /etc/cron.d/takemiko-backup
 
 ```bash
 sudo -u postgres createdb takemiko_cms_restore_test
-gunzip -c /var/backups/takemiko/db-<手順2で作られたファイル名の日時>.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_test
+sudo gunzip -c /var/backups/takemiko/db-<手順2で作られたファイル名の日時>.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_test
 sudo -u postgres psql -d takemiko_cms_restore_test -c "SELECT count(*) FROM articles;"
 ```
 
@@ -67,7 +67,8 @@ sudo -u postgres dropdb takemiko_cms_restore_test
 
 ```bash
 mkdir -p /tmp/uploads-restore-test
-tar -xzf /var/backups/takemiko/uploads-<日時>.tar.gz -C /tmp/uploads-restore-test
+sudo tar -xzf /var/backups/takemiko/uploads-<日時>.tar.gz -C /tmp/uploads-restore-test
+sudo chown -R "$USER" /tmp/uploads-restore-test
 ls /tmp/uploads-restore-test/uploads
 rm -rf /tmp/uploads-restore-test
 ```

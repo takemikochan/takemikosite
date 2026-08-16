@@ -67,7 +67,7 @@ journalctl -u takemiko-cms -f
 1. DB を復元する場合、まず一時DBに復元して内容を確認してから本番に適用する（本番へ直接上書きする前に必ず検証する）:
    ```bash
    sudo -u postgres createdb takemiko_cms_restore_verify
-   gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_verify
+   sudo gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_verify
    # 内容を確認したら
    sudo -u postgres dropdb takemiko_cms_restore_verify
    ```
