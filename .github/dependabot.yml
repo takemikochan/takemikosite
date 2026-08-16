@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    groups:
+      astro:
+        patterns:
+          - '@astrojs/*'
+          - 'astro'
+
+  - package-ecosystem: npm
+    directory: /cms
+    schedule:
+      interval: weekly
+    # Strapi のメジャー更新はカスタム lifecycle・admin 設定の手当てが要るため自動化しない（README参照）
+    ignore:
+      - dependency-name: '@strapi/*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: npm
+    directory: /worker
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

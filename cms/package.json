@@ -6,7 +6,6 @@
   "scripts": {
     "build": "strapi build",
     "console": "strapi console",
-    "deploy": "strapi deploy",
     "dev": "strapi develop",
     "develop": "strapi develop",
     "start": "strapi start",
@@ -16,7 +15,6 @@
   },
   "dependencies": {
     "@strapi/database": "5.52.0",
-    "@strapi/plugin-cloud": "5.52.0",
     "@strapi/plugin-users-permissions": "5.52.0",
     "@strapi/strapi": "5.52.0",
     "pg": "^8.23.0",

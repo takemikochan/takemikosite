@@ -1,15 +1,8 @@
 import type { Core } from '@strapi/strapi';
 
-const allowedMediaTypes = [
-  'image/*',
-  'video/*',
-  'audio/*',
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.*',
-  'text/plain',
-  'text/csv',
-];
+// 現状すべてのコンテンツタイプの画像フィールドが Media (images only) のため、
+// 実際に使わない形式（動画・音声・PDF・Office文書等）は許可しない（§SEC-07）。
+const allowedMediaTypes = ['image/*'];
 
 const deniedExecutableTypes = [
   'application/vnd.microsoft.portable-executable',

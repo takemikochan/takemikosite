@@ -76,7 +76,7 @@ journalctl -u takemiko-cms -f
    sudo systemctl stop takemiko-cms
    sudo -u postgres dropdb takemiko_cms
    sudo -u postgres createdb takemiko_cms
-   gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms
+   sudo gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms
    sudo systemctl start takemiko-cms
    ```
 3. アップロード画像を復元する場合:
@@ -87,3 +87,8 @@ journalctl -u takemiko-cms -f
    ```
 
 復元リハーサルは Phase 6（`deploy/PHASE6-RUNBOOK.md` 手順4）で1回実施済み。
+
+## 既知の課題（対応見送り事項）
+
+- **deploy ユーザーと CMS 実行ユーザーが同一**: GitHub Actions が握る静的サイト配送用のSSH鍵（`deploy`ユーザー）と、Strapi プロセスを実行するユーザーが同じ `deploy` になっている。デプロイ鍵が侵害された場合、静的ファイルの改ざんに留まらずCMSの実行コードまで書き換えられる状態。専用の実行ユーザー（例: `strapi`）へ分離し、`/opt/takemiko-cms` の所有権と `deploy/systemd/takemiko-cms.service` の `User=` を切り替えることで解消できるが、稼働中のVPSでの移行作業が必要なため未実施。
+- **バックアップが同一VPS内・非暗号化**: `deploy/backup/backup-cms.sh` はVPS内の `/var/backups/takemiko/` にのみ保存する。ディスク障害やVPSアカウント侵害時に本体と同時に失うリスクがある。オフサイト保管（S3/rclone等）と保存時の暗号化を将来的に追加したい。

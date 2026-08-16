@@ -2,6 +2,14 @@ import { defineCollection, z } from 'astro:content';
 import { strapiLoader } from './lib/strapi/loader';
 import { mockLoader } from './lib/mock/loader';
 import { mockNews, mockCategories, mockWorks, mockSnsLinks, mockGoodsLinks } from './lib/mock/data';
+import { isHttpUrl } from './lib/url';
+
+// http(s) 以外のスキーム（javascript: / data: 等）を拒否し、保存型XSSを防ぐ。
+// 不正なスキームが混入した場合はビルドを失敗させる（サイレントに公開しない）。
+const httpUrlSchema = z
+  .string()
+  .url()
+  .refine(isHttpUrl, { message: '許可されていないURLスキームです（http/httpsのみ許可）' });
 
 const url = import.meta.env.STRAPI_URL;
 const token = import.meta.env.STRAPI_TOKEN;
@@ -38,7 +46,7 @@ const workSchema = z.object({
   slug: z.string(),
   title: z.string(),
   summary: z.string().nullable().optional(),
-  liveUrl: z.string().url(),
+  liveUrl: httpUrlSchema,
   techTags: z.string().nullable().optional(), // カンマ区切り。表示側で split(',') する
   pinned: z.boolean().default(false),
   publishedAt: z.string(),
@@ -49,7 +57,7 @@ const snsLinkSchema = z.object({
   id: z.string(),
   platform: z.enum(['x', 'youtube', 'twitch', 'pixiv', 'booth', 'suzuri', 'other']),
   label: z.string(),
-  url: z.string().url(),
+  url: httpUrlSchema,
   handle: z.string().nullable().optional(),
   order: z.number().default(0),
 });
@@ -58,7 +66,7 @@ const goodsLinkSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string().nullable().optional(),
-  url: z.string().url(),
+  url: httpUrlSchema,
   kind: z.enum(['ec', 'support', 'nft']),
   badge: z.string().nullable().optional(),
   order: z.number().default(0),

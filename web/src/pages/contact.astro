@@ -44,7 +44,7 @@ const formReady = Boolean(site.contactEndpoint && site.turnstileSiteKey);
               <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
             </div>
 
-            <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} />
+            <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} data-action="contact" />
 
             <p class="status" role="status" aria-live="polite" />
 

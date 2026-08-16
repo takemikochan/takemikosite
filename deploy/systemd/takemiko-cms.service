@@ -14,5 +14,15 @@ RestartSec=5
 NoNewPrivileges=true
 PrivateTmp=true
 
+# サンドボックス強化（§OPS-02）。侵害時のVPS内影響を限定する。
+# アップロードファイルの書き込み先だけを明示的に許可し、それ以外は読み取り専用にする。
+ProtectSystem=strict
+ReadWritePaths=/opt/takemiko-cms/public/uploads
+ProtectHome=true
+PrivateDevices=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+UMask=0077
+
 [Install]
 WantedBy=multi-user.target

@@ -12,3 +12,7 @@ ALLOWED_ORIGIN = "https://takemiko.com"
 binding = "DB"
 database_name = "takemiko-contact"
 database_id = "309b7bbf-b307-4f54-b514-57b035559e45"
+
+# 保持期間を過ぎた問い合わせデータを日次で削除する（§PRIV-01）
+[triggers]
+crons = ["0 18 * * *"] # UTC 18:00 = JST 03:00
