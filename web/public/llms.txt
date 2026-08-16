@@ -1,0 +1,21 @@
+# たけるのみこと Official Site
+
+> VTuberとNFTを結ぶ、巫女「たけるのみこと（takerunomikoto / 略称：たけみこ、takemiko）」の公式サイト。走海神社（はしりうみじんじゃ）の巫女として、配信・イラスト・プログラミング/AI関連のコンテンツ制作、NFT展開を行っている。
+
+## 主要ページ
+
+- [プロフィール](https://takemiko.com/profile/): 活動名・略称・神社設定・活動内容・SNSリンク
+- [お知らせ](https://takemiko.com/news/): 配信告知・イラスト公開・グッズ情報等の更新履歴（ページネーションあり）
+- [制作実績](https://takemiko.com/works/): 生成AIで制作したLP等のポートフォリオ
+- [グッズ](https://takemiko.com/goods/): EC・支援・NFTマーケットプレイスへのリンク集
+
+## フィード・索引
+
+- [サイトマップ](https://takemiko.com/sitemap-index.xml)
+- [RSSフィード](https://takemiko.com/rss.xml): お知らせの更新をフィードで配信
+
+## その他
+
+- [プライバシーポリシー](https://takemiko.com/privacy/)
+
+このサイトは静的生成され、お知らせ・制作実績・SNS/グッズリンクはCMS経由で随時更新される。最新の一覧は上記サイトマップ・RSSを参照すること。

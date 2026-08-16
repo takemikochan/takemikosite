@@ -46,4 +46,44 @@ Windows のグローバルな PostgreSQL サービスとは別に、**プロジ�
 
 ## 運用手順
 
-（Phase 5 以降、CMS コード更新の runbook・バックアップ復元手順などをここに追記する）
+### CMS コード更新の反映
+
+`cms/` のコード（lifecycle subscriber・Content-Type スキーマ等）を変更した場合、自動デプロイの対象外（§6.3 参照）。VPS 上で手動反映する:
+
+```bash
+# deploy ユーザーで、VPS上の /opt/takemiko-cms-src にて
+git pull origin main
+cd cms && npm ci && npm run build
+sudo systemctl restart takemiko-cms
+journalctl -u takemiko-cms -f
+```
+
+### バックアップ
+
+`deploy/backup/backup-cms.sh` が PostgreSQL のダンプとアップロード画像を `/var/backups/takemiko/` に日次で保存する（cron 設定は `deploy/PHASE6-RUNBOOK.md` 参照）。直近14世代を保持。
+
+### 復元手順
+
+1. DB を復元する場合、まず一時DBに復元して内容を確認してから本番に適用する（本番へ直接上書きする前に必ず検証する）:
+   ```bash
+   sudo -u postgres createdb takemiko_cms_restore_verify
+   gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms_restore_verify
+   # 内容を確認したら
+   sudo -u postgres dropdb takemiko_cms_restore_verify
+   ```
+2. 本番へ適用する場合は CMS サービスを止めてから行う:
+   ```bash
+   sudo systemctl stop takemiko-cms
+   sudo -u postgres dropdb takemiko_cms
+   sudo -u postgres createdb takemiko_cms
+   gunzip -c /var/backups/takemiko/db-<日時>.sql.gz | sudo -u postgres psql -d takemiko_cms
+   sudo systemctl start takemiko-cms
+   ```
+3. アップロード画像を復元する場合:
+   ```bash
+   sudo systemctl stop takemiko-cms
+   sudo tar -xzf /var/backups/takemiko/uploads-<日時>.tar.gz -C /opt/takemiko-cms/public/
+   sudo systemctl start takemiko-cms
+   ```
+
+復元リハーサルは Phase 6（`deploy/PHASE6-RUNBOOK.md` 手順4）で1回実施済み。

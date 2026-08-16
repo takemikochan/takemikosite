@@ -9,13 +9,37 @@ import SnsList from '../components/profile/SnsList.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import { sortPinnedFirst } from '../lib/news';
 import { site } from '../data/site';
+import { profile } from '../data/profile';
 
 const allNews = await getCollection('news');
 const latestNews = sortPinnedFirst(allNews).slice(0, 3);
 const snsLinks = await getCollection('snsLinks');
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: [profile.nameEn, profile.shortName.ja, profile.shortName.en],
+  description: profile.tagline,
+  image: new URL(profile.avatar, site.url).toString(),
+  url: site.url,
+  sameAs: snsLinks.map((entry) => entry.data.url),
+};
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: site.url,
+  description: site.description,
+};
+// </script> がペイロードに含まれていても script タグを閉じてしまわないようにする
+const personLdSafe = JSON.stringify(personLd).replace(/</g, '\\u003c');
+const websiteLdSafe = JSON.stringify(websiteLd).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout title={site.name}>
+  <script is:inline type="application/ld+json" set:html={personLdSafe} />
+  <script is:inline type="application/ld+json" set:html={websiteLdSafe} />
   <main>
     <Hero />
     <LatestNews entries={latestNews} />

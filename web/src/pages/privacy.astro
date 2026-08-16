@@ -1,0 +1,55 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { site } from '../data/site';
+import { profile } from '../data/profile';
+---
+
+<PageLayout title="プライバシーポリシー" description={`${site.name}公式サイトのプライバシーポリシー。`}>
+  <section class="prose" data-reveal>
+    <p>
+      {site.name}（以下「当サイト」）は、本ウェブサイト（{site.url}）における個人情報・アクセス情報の取り扱いについて、以下のとおりプライバシーポリシーを定めます。
+    </p>
+
+    <h2>運営者</h2>
+    <p>
+      {profile.name}（{profile.shortName.ja} / {profile.shortName.en}）が個人で運営しています。
+      お問い合わせは <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> までお願いします。
+    </p>
+
+    <h2>アクセス解析ツールについて</h2>
+    <p>
+      当サイトでは、サイトの利用状況を把握するために Google が提供するアクセス解析ツール「Google
+      Analytics（GA4）」を利用しています。GA4 は Cookie
+      を使用してアクセス情報を収集しますが、氏名・住所・電話番号・メールアドレス等、個人を特定する情報は含まれません。
+    </p>
+    <p>
+      この収集されたデータは Google
+      社のプライバシーポリシーに基づいて管理されます。データの収集を望まない場合は、ブラウザの設定で
+      Cookie を無効にするか、Google が提供する<a
+        href="https://tools.google.com/dlpage/gaoptout"
+        target="_blank"
+        rel="noopener noreferrer">オプトアウトアドオン</a
+      >を利用することで収集を停止できます。詳しくは<a
+        href="https://policies.google.com/privacy?hl=ja"
+        target="_blank"
+        rel="noopener noreferrer">Google のプライバシーポリシー</a
+      >をご確認ください。
+    </p>
+
+    <h2>外部リンクについて</h2>
+    <p>
+      当サイトには SNS・EC・NFT マーケットプレイス等、外部サイトへのリンクが含まれます。リンク先で提供される情報の正確性や、リンク先サイトでの個人情報の取り扱いについて、当サイトは責任を負いません。リンク先のプライバシーポリシーをご確認ください。
+    </p>
+
+    <h2>プライバシーポリシーの変更</h2>
+    <p>
+      当サイトは、必要に応じて本ポリシーの内容を予告なく変更することがあります。変更後のプライバシーポリシーは、本ページに掲載した時点から効力を生じるものとします。
+    </p>
+
+    <h2>お問い合わせ</h2>
+    <p>
+      本ポリシーに関するお問い合わせは <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a
+      > までお願いします。
+    </p>
+  </section>
+</PageLayout>

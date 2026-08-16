@@ -26,7 +26,10 @@ const year = new Date().getFullYear();
 
     <!-- SNS リンクは Strapi (sns-link) から取得する（Phase 2 以降、モックで先行実装） -->
 
-    <p class="footer__copyright">&copy; {year} {site.name}</p>
+    <div class="footer__legal">
+      <a href="/privacy/">プライバシーポリシー</a>
+      <p class="footer__copyright">&copy; {year} {site.name}</p>
+    </div>
   </div>
 </footer>
 
@@ -68,10 +71,31 @@ const year = new Date().getFullYear();
     color: var(--color-primary);
   }
 
+  .footer__legal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+  .footer__legal a {
+    color: var(--color-text-muted);
+    font-size: var(--fs-xs);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .footer__legal a:hover {
+    color: var(--color-primary);
+  }
   .footer__copyright {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--fs-xs);
+  }
+
+  @media (min-width: 768px) {
+    .footer__legal {
+      align-items: flex-end;
+    }
   }
 
   @media (min-width: 768px) {

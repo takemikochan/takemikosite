@@ -192,9 +192,9 @@ Settings → Transfer Tokens → Create new Transfer Token
 - Permission: **Push**（ローカル→本番の一方向）
 - 発行されたトークンは Claude に共有せず、次のコマンドに直接使ってください
 
-ローカルの PostgreSQL が起動していない場合は起動します（PowerShell、リポジトリのルートで）:
+ローカルの PostgreSQL が起動していない場合は起動します（PowerShell、リポジトリのルートで。README.md 参照）:
 ```powershell
-pg_ctl.exe -D cms\.pgdata -l cms\.pgdata\log start
+& "C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe" -D "D:\Projects\takemikosite\cms\.pgdata" -l "D:\Projects\takemikosite\cms\.pgdata\server.log" start
 ```
 
 ローカルからコンテンツを転送します:
@@ -251,8 +251,8 @@ journalctl -u takemiko-cms -f
 ローカルPC・PowerShellから:
 
 ```powershell
-scp -i C:\Users\mikoto\.ssh\takemiko_github -P 22 deploy\fail2ban\filter.d\takemiko-cms.conf deploy@<VPSホスト>:/tmp/takemiko-cms-filter.conf
-scp -i C:\Users\mikoto\.ssh\takemiko_github -P 22 deploy\fail2ban\jail.d\takemiko-cms.local deploy@<VPSホスト>:/tmp/takemiko-cms.local
+scp -i C:\Users\mikoto\.ssh\takemiko_github -P 22 deploy\fail2ban\filter.d\takemiko-cms.conf deploy@162.43.44.178:/tmp/takemiko-cms-filter.conf
+scp -i C:\Users\mikoto\.ssh\takemiko_github -P 22 deploy\fail2ban\jail.d\takemiko-cms.local deploy@162.43.44.178:/tmp/takemiko-cms.local
 ```
 
 VPS側（sudo ユーザー）:
